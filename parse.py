@@ -149,7 +149,48 @@ def create_terminal_ast_node(type, value, sourceLineNumber):
 
 
 def is_current_token_type(type):
-    return current_token.type == type
+    global currentToken
+    return currentToken.type == type
 
 def is_current_token(type, value):
-    return current_token.type == type and current_token.value == value
+    global currentToken
+    return currentToken.type == type and currentToken.value == value
+
+
+
+def read_NT():
+    global currentToken, tokens, token_index
+
+    while True:
+        _token = tokens[token_index]
+        token_index += 1
+        currentToken.sourceLineNumber = _token.sourceLineNumber
+        currentToken.value = _token.value
+
+        if _token.type == TokenType.RESERVED:
+            currentToken.type = ASTNodeType.LET
+        elif _token.type == TokenType.IDENTIFIER:
+            currentToken.type = ASTNodeType.IDENTIFIER
+        elif _token.type == TokenType.STRING:
+            currentToken.type = ASTNodeType.STRING
+        elif _token.type == TokenType.INTEGER:
+            currentToken.type = ASTNodeType.INTEGER
+        elif _token.type == TokenType.OPERATOR:
+            currentToken.type = ASTNodeType.OPERATOR
+        elif _token.type == TokenType.L_PAREN:
+            if _token.value == "(":
+                currentToken.type = ASTNodeType.PAREN
+        elif _token.type == TokenType.END_TOKEN:
+            currentToken.value = None
+            currentToken.type = ASTNodeType.DUMMY
+
+        if not is_current_token_type(TokenType.DELETE):
+            break
+
+    if currentToken.value is not None:
+        if currentToken.type == ASTNodeType.IDENTIFIER:
+            node = create_terminal_ast_node(ASTNodeType.IDENTIFIER, currentToken.value, currentToken.sourceLineNumber)
+        elif currentToken.type == ASTNodeType.INTEGER:
+            node = create_terminal_ast_node(ASTNodeType.INTEGER, currentToken.value, currentToken.sourceLineNumber)
+        elif currentToken.type == ASTNodeType.STRING:
+            node = create_terminal_ast_node(ASTNodeType.STRING, currentToken.value, currentToken.sourceLineNumber)
