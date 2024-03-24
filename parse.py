@@ -3,12 +3,7 @@ from scanner import tokenize_file
 file_path = 'input.rpal'
 tokens = tokenize_file(file_path)
 
-# source line number is useful for error handling, debugging, and generating meaningful error messages.
-class Token:
-    def __init__(self, type, value, sourceLineNumber):
-        self.type = type
-        self.value = value
-        self.sourceLineNumber = sourceLineNumber
+print(tokens[-1].sourceLineNumber)
 
 # we can use objects of this class to create abstract syntax tree node objects 
 class ASTNode:
@@ -35,3 +30,4 @@ class Stack:
     
     def is_empty(self):
         return len(self.arr) == 0
+    
