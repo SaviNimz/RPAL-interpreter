@@ -123,7 +123,29 @@ def print_stack():
 
 
 
+def build_n_ary_ast_node(type, ariness):
+    node = ASTNode(type)
+    node.child = None
+    node.sibling = None
+    node.sourceLineNumber = -1
 
+    while ariness > 0:
+        child = pop()  # Assuming there's a function pop() to retrieve child nodes
+        if node.child is not None:
+            child.sibling = node.child
+        node.child = child
+        node.sourceLineNumber = child.sourceLineNumber
+
+        ariness -= 1
+
+    push(node)  # Assuming there's a function push() to push the node onto some stack
+
+    return node
+
+def create_terminal_ast_node(type, value, sourceLineNumber):
+    node = ASTNode(type, value, sourceLineNumber)
+    push(node)
+    return node
 
 
 def is_current_token_type(type):
