@@ -54,9 +54,7 @@ class TokenType(Enum):
     R_PAREN = auto()
     DELETE = auto()
     END_TOKEN = auto()
-
-
-    
+   
 class Token:
     def __init__(self, type, value, sourceLineNumber):
         self.type = type
@@ -89,10 +87,40 @@ class Stack:
     def is_empty(self):
         return len(self.arr) == 0
 
-# Global variables
-stack = Stack()
-current_token = Token(None, None, None)
-token_index = 0
+
+stack = Stack(100)  # Initialize the stack with a given capacity
+currentToken = None  # Define currentToken
+
+def push(node):
+    global stack
+    stack.top += 1
+    stack.arr[stack.top] = node
+
+def pop():
+    global stack
+    node = stack.arr[stack.top]
+    stack.top -= 1
+    return node
+
+def is_empty():
+    global stack
+    return stack.top == -1
+
+def print_ast(ast_node, depth):
+    # Pre-order traversal
+    print("-" * depth, ast_node.type, ast_node.value if ast_node.value is not None else "")
+    if ast_node.child is not None:
+        print_ast(ast_node.child, depth + 1)
+    if ast_node.sibling is not None:
+        print_ast(ast_node.sibling, depth)
+
+def print_stack():
+    global stack
+    print("\nStack:", stack.top)
+    for i in range(stack.top + 1):
+        print_ast(stack.arr[i], 0)
+        print()
+
 
 
 
