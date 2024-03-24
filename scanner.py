@@ -33,7 +33,5 @@ def tokenize_file(file_path):
         code = preprocess(code)
         return scan(code)
 
-file_path = 'input.rpal' 
-tokens = tokenize_file(file_path)
 
-print(tokens)
+
