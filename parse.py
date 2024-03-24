@@ -121,8 +121,6 @@ def print_stack():
         print_ast(stack.arr[i], 0)
         print()
 
-
-
 def build_n_ary_ast_node(type, ariness):
     node = ASTNode(type)
     node.child = None
@@ -147,7 +145,6 @@ def create_terminal_ast_node(type, value, sourceLineNumber):
     push(node)
     return node
 
-
 def is_current_token_type(type):
     global currentToken
     return currentToken.type == type
@@ -157,7 +154,7 @@ def is_current_token(type, value):
     return currentToken.type == type and currentToken.value == value
 
 
-
+#following function can have errors check it
 def read_NT():
     global currentToken, tokens, token_index
 
@@ -194,3 +191,6 @@ def read_NT():
             node = create_terminal_ast_node(ASTNodeType.INTEGER, currentToken.value, currentToken.sourceLineNumber)
         elif currentToken.type == ASTNodeType.STRING:
             node = create_terminal_ast_node(ASTNodeType.STRING, currentToken.value, currentToken.sourceLineNumber)
+
+
+
