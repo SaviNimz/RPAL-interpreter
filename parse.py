@@ -154,7 +154,7 @@ def is_current_token(type, value):
     return currentToken.type == type and currentToken.value == value
 
 
-#following function can have errors check it
+# this function is responsible for advancing through token stream@
 def read_NT():
     global currentToken, tokens, token_index
 
@@ -191,6 +191,8 @@ def read_NT():
             node = create_terminal_ast_node(ASTNodeType.INTEGER, currentToken.value, currentToken.sourceLineNumber)
         elif currentToken.type == ASTNodeType.STRING:
             node = create_terminal_ast_node(ASTNodeType.STRING, currentToken.value, currentToken.sourceLineNumber)
+
+
 
 
 

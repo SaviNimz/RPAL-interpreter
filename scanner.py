@@ -36,4 +36,7 @@ def tokenize_file(file_path):
                         break
     return tokens
 
+t = tokenize_file('input.rpal')
+for token in t:
 
+    print(token.type)
