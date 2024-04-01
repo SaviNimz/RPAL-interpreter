@@ -201,3 +201,37 @@ def read_NT():
     currentToken = tokens[token_index]
 
 
+
+
+def procE():
+    print("procE")
+    if (is_current_token("KEYWORD","let")):
+        #read the non-terminal function
+        read_NT()
+        procD()
+        if not (is_current_token("KEYWORD","in")):
+            print("E: 'in' expected")
+            exit(0)
+        #read the non-terminal function
+        read_NT()
+        procE()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LET, 2)
+
+    elif (is_current_token("KEYWORD","fn")):
+        treesToPop = 0
+        read_NT()
+        # putting punctuation here is a problem
+        while (is_current_token_type("KEYWORD") and is_current_token_type("PUNCTUATION")):
+            procVB()
+            treesToPop += 1
+            if (treesToPop == 0):
+                print("E: atleast one 'Vb' expected" )
+
+            if not (is_current_token("OPERATOR", ".")):
+                print("E: '.' expected ")
+
+            read_NT()
+            procE()
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_LAMBDA,treesToPop+1)
+    else:
+        procEW()

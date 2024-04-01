@@ -11,7 +11,7 @@ patterns = {
     'KEYWORD': r'(let|ls|le|eq|ne|true|false|nil|dummy|where|in|fn|and|rec|within|aug|not|or|gr|ge)',
     'IDENTIFIER': r'[a-zA-Z_][a-zA-Z0-9_]*',
     'INTEGER': r'\d+',
-    'OPERATOR': r'[\+\-\*/=<>]+',
+    'OPERATOR': r'[\+\-\*/=<>\.]+',
     'STRING': r'\".*?\"',
     'DELETE': r'delete',
     'PUNCTUATION': r'[,;()\[\]\{\}]',
@@ -37,3 +37,5 @@ def tokenize_file(file_path):
     return tokens
 
 t = tokenize_file('input.rpal')
+for i in t:
+    print(i.value)
