@@ -1,5 +1,3 @@
-let   9-10     hi 90
-34 53 (665)
-->
-|
-hello world
+let let X=3
+in
+Print(X,X**2)

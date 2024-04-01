@@ -9,6 +9,7 @@ file_path = 'input.rpal'
 # here we have the tokens that are tokenized from the input file 
 
 tokens = tokenize_file(file_path)
+
 token_index = 0
 
 class TokenType(Enum):
@@ -106,6 +107,7 @@ def push(node):
 def pop():
     
     global stack
+    print(stack.arr[0].type)
     node = stack.pop()
     return node
 
@@ -114,6 +116,8 @@ def is_empty():
     return stack.top == -1
 
 def print_ast(ast_node, depth):
+    if ast_node is None:
+        return
     # Pre-order traversal
     print("-" * depth, ast_node.type, ast_node.value if ast_node.value is not None else "")
     if ast_node.child is not None:
@@ -130,10 +134,12 @@ def print_stack():
 
 # We use the following function to build the AST using stack based approach
 def build_n_ary_ast_node(type, ariness):
-    node = ASTNode(type)
-    node.child = None
-    node.sibling = None
-    node.sourceLineNumber = -1
+
+    print("heyy someone called me !!")
+    node = ASTNode(type,None,-1)
+    # node.child = None
+    # node.sibling = None
+
 
     while ariness > 0:
         child = pop()  # Assuming there's a function pop() to retrieve child nodes
@@ -159,20 +165,24 @@ def is_current_token_type(type):
 
 def is_current_token(type, value):
     global currentToken
+    print(currentToken.type,currentToken.value)
     return (currentToken.type == type and currentToken.value == value)
 
 # this function is responsible for advancing through token stream
 def read_NT():
 
+    print('hi')
     global currentToken, tokens, token_index
 
     _token = tokens[token_index]
+
+    print('up')
     token_index += 1
     currentToken.sourceLineNumber = _token.sourceLineNumber
     currentToken.value = _token.value
 
     if _token.type == "KEYWORD":
-        currentToken.type = "RESERVED"
+        currentToken.type = "KEYWORD"
     elif _token.type == "IDENTIFIER":
         currentToken.type = "IDENTIFIER"
     elif _token.type == "INTEGER":
@@ -213,7 +223,7 @@ def procE():
         treesToPop = 0
         read_NT()
         # putting punctuation here is a problem
-        while (is_current_token_type("KEYWORD") and is_current_token_type("PUNCTUATION")):
+        while (is_current_token_type("KEYWORD") and is_current_token_type("L_PAREN")):
             procVB()
             treesToPop += 1
             if (treesToPop == 0):
@@ -508,8 +518,7 @@ def procDB():
     
     elif (is_current_token_type("IDENTIFIER")):
         read_NT()
-
-        if (is_current_token_type("OPERATOR", ",")):
+        if (is_current_token("OPERATOR", ",")):
             read_NT()
             procVB()
 
@@ -583,7 +592,6 @@ def procVL():
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA, treesToPop + 1)
 
 
-
 def startParse():
 
     read_NT()
@@ -602,4 +610,3 @@ def buildAST():
 root = buildAST()
 
 print_ast(root,0)
-print(root)
