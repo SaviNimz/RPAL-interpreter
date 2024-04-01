@@ -258,3 +258,20 @@ def procT():
         if (treesToPop > 0):
 
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_TAU,treesToPop+1)
+
+
+
+def procTC():
+    print("ProcTC")
+    procB()
+    if(is_current_token("OPERATOR","->")):
+        readNT()
+        procTC()
+
+        if not (is_current_token("OPERATOR", "|")):
+            print("TC: '|' expected\n")
+        
+        readNT()
+        procTC()
+
+        buildNAryASTNode(ASTNodeType.ASTNodeType_CONDITIONAL, 3)
