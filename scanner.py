@@ -1,6 +1,5 @@
 import re
 
-# source line number is useful for error handling, debugging, and generating meaningful error messages.
 class Token:
     def __init__(self, type, value, sourceLineNumber):
         self.type = type
@@ -14,14 +13,15 @@ patterns = {
     'OPERATOR': r'[\+\-\*/=<>|\.]+',
     'STRING': r'\".*?\"',
     'DELETE': r'delete',
-    'PUNCTUATION': r'[,;()\[\]\{\}]',
-    'END': r'\$'
+    'PUNCTUATION': r'[,;\[\]\{\}]',
+    'END': r'\$',
+    'L_PAREN': r'\(',
+    'R_PAREN': r'\)'
 }
 
 combined_pattern = '|'.join(f'(?P<{token}>{pattern})' for token, pattern in patterns.items())
 
 def preprocess(text):
-    # Remove everything after '//'
     return re.sub(r'//.*', '', text)
 
 def tokenize_file(file_path):

@@ -350,3 +350,114 @@ def procBS():
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_NOT, 1)
     else:
         procBP()
+
+def procAF():
+    print("procAF")
+    if (is_current_token("OPERATOR", "**")):
+        read_NT()
+        procAF()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_EXP, 2)
+
+def procAT():
+    print("procAT")
+    procAF()
+    #At -> Af;
+    #extra readNT in procAF()
+    bool mult = True
+    while ((is_current_token(OPERATOR, "*")) or (is_current_token(OPERATOR, "/"))):
+        #if (strcmp(currentToken.value, "*") == 0)
+         #   mult = true;
+        #else if (strcmp(currentToken.value, "/") == 0)
+         #   mult = false;
+        #readNT();
+        #procAF();
+        #extra readNT in procAF()
+        #if (mult) // At -> At '' Af => ''
+        #   buildNAryASTNode(ASTNodeType_MULT, 2);
+        #else // At -> At '/' Af => '/'
+        #   buildNAryASTNode(ASTNodeType_DIV, 2);
+        pass
+
+# fix this 
+
+def procA():
+    print("procA")
+
+    if (is_current_token("OPERATOR", "+")):
+        read_NT()
+        procAT()
+        # extra readNT in procAT()
+
+    elif (is_current_token("OPERATOR", "-")):
+        #A -> '-' At => 'neg'
+        read_NT()
+        procAT()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NEG, 1)
+
+    bool plus=True
+    while (is_current_token("OPERATOR", "+") or is_current_token("OPERATOR", "-")):
+        if(currentToken.value) 
+
+
+def procAP():
+    print("procAP")
+    procR()
+    while (is_current_token("OPERATOR", "@")):
+        read_NT()
+        if(not is_current_token("IDENTIFIER")):
+           print("AP: expected Identifier")
+        read_NT()
+
+        procR()
+
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AT, 3)
+# this is finished
+
+def procRN():
+    print("procRN")
+    #if (is_current_token("IDENTIFIER") or is_current_token("INTEGER") or is_current_token("STRING")):
+    #R -> '<IDENTIFIER>', R -> '<INTEGER>', R-> '<STRING>'
+    #No need to do anything, as these are already processed in procR()
+    
+    if (is_current_token("KEYWORD", "True")):
+        create_terminal_ast_node(ASTNodeType.ASTNodeType_TRUE,"true",currentToken.sourceLineNumber)
+        read_NT()
+
+    elif (is_current_token("KEYWORD", "False")):
+        create_terminal_ast_node(ASTNodeType.ASTNodeType_FALSE,"false",currentToken.sourceLineNumber)
+        read_NT()
+
+    elif (is_current_token("KEYWORD", "nil")):
+        create_terminal_ast_node(ASTNodeType.ASTNodeType_NIL,"nil",currentToken.sourceLineNumber)
+        read_NT()
+
+    elif (is_current_token_type("L_PAREN")):
+        read_NT()
+        procE()
+
+        if not (is_current_token_type("R_PAREN")):
+           #Replace with appropriate error handling
+           print("RN: ')' expected")
+
+    elif (is_current_token_type("KEYWORD" "dummy")):
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_DUMMY, "dummy", currentToken.sourceLineNumber)
+        read_NT()
+    pass
+
+def procR():
+    print("procR")
+    while (is_current_token("IDENTIFIER") or 
+            is_current_token("INTEGER") or 
+            is_current_token("STRING") or 
+            is_current_token("KEYWORD", "True") or 
+            is_current_token("KEYWORD", "False") or 
+            is_current_token("KEYWORD", "nil") or 
+            is_current_token("KEYWORD", "dummy") or 
+            is_current_token("L_PAREN")):
+
+        procRN()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GAMMA, 2)
+        read_NT()
+
+
