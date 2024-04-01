@@ -37,5 +37,3 @@ def tokenize_file(file_path):
     return tokens
 
 t = tokenize_file('input.rpal')
-for i in t:
-    print(i.value, i.type)

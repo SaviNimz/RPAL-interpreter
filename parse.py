@@ -104,16 +104,14 @@ def push(node):
     stack.push(node)
 
 def pop():
+    
     global stack
-    node = stack.arr[stack.top]
-    stack.top -= 1
+    node = stack.pop()
     return node
 
 def is_empty():
     global stack
     return stack.top == -1
-
-
 
 def print_ast(ast_node, depth):
     # Pre-order traversal
@@ -129,8 +127,6 @@ def print_stack():
     for i in range(stack.top + 1):
         print_ast(stack.arr[i], 0)
         print()
-
-
 
 # We use the following function to build the AST using stack based approach
 def build_n_ary_ast_node(type, ariness):
@@ -165,7 +161,6 @@ def is_current_token(type, value):
     global currentToken
     return (currentToken.type == type and currentToken.value == value)
 
-
 # this function is responsible for advancing through token stream
 def read_NT():
 
@@ -199,9 +194,6 @@ def read_NT():
 
     # update the current token
     currentToken = tokens[token_index]
-
-
-
 
 def procE():
     print("procE")
@@ -242,7 +234,7 @@ def procEW():
     procT()
     if(is_current_token("KEYWORD","where")):
         read_NT()
-        proc_DR()
+        procDR()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_WHERE,2)
 
 def procT():
@@ -271,13 +263,13 @@ def procTC():
     print("ProcTC")
     procB()
     if(is_current_token("OPERATOR","->")):
-        readNT()
+        read_NT()
         procTC()
 
         if not (is_current_token("OPERATOR", "|")):
             print("TC: '|' expected\n")
         
-        readNT()
+        read_NT()
         procTC()
 
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_CONDITIONAL, 3)
@@ -378,7 +370,6 @@ def procAT():
         else:
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_DIV, 2)
 
-
 def procA():
     print("procA")
 
@@ -410,7 +401,6 @@ def procA():
         else:
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_MINUS, 2)
 
-
 def procAP():
     print("procAP")
     procR()
@@ -423,7 +413,6 @@ def procAP():
         procR()
 
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_AT, 3)
-
 
 def procRN():
     print("procRN")
@@ -471,7 +460,6 @@ def procR():
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_GAMMA, 2)
         read_NT()
 
-
 def procDR():
     print("procDR")
     
@@ -504,7 +492,6 @@ def procD():
         read_NT()
         procD()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_WITHIN, 2)
-
 
 def procDB():
     print("procDB")
@@ -556,7 +543,6 @@ def procDB():
 
                 build_n_ary_ast_node(ASTNodeType.ASTNodeType_FCNFORM,treesToPop+2)
 
-
 def procVB():
     print("procVB")
     
@@ -595,3 +581,25 @@ def procVL():
             
         if (treesToPop>0):
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA, treesToPop + 1)
+
+
+
+def startParse():
+
+    read_NT()
+    procE()
+
+    if(currentToken.value != None):
+        print(currentToken.value)
+
+def buildAST():
+
+    startParse()
+
+    return pop()
+
+
+root = buildAST()
+
+print_ast(root,0)
+print(root)
