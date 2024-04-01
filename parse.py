@@ -258,13 +258,15 @@ def procT():
         if (treesToPop > 0):
 
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_TAU,treesToPop+1)
+
 def procTA():
     print("procTA")
     procTC()
     while (is_current_token("KEYWORD", "aug")):
         read_NT()
         procTC()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AUG,2)    
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AUG,2) 
+
 def procTC():
     print("ProcTC")
     procB()
@@ -278,4 +280,73 @@ def procTC():
         readNT()
         procTC()
 
-        buildNAryASTNode(ASTNodeType.ASTNodeType_CONDITIONAL, 3)
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_CONDITIONAL, 3)
+
+def procB():
+    print("procB")
+    procBT()
+    # extra read_NT in proc_BT()
+    while (is_current_token("KEYWORD", "or")):
+        read_NT()
+        procBT()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_OR, 2)
+
+def procBT():
+    print("procBT")
+    procBS()
+    # extra read_NT in proc_BS()
+    while is_current_token("OPERATOR", "&"):
+        read_NT()
+        procBS()
+        # extra read_NT in proc_BS()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AND, 2)
+
+def procBP():
+    print("procBP")
+    procA()
+    # Bp -> A('gr' | '>' ) A => 'gr'
+    if ((is_current_token("KEYWORD", "gr") or is_current_token("OPERATOR", ">"))):
+        read_NT()
+        procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GR, 2)
+
+    #Bp -> A ('ge' | '>=') A => 'ge'
+    elif ((is_current_token("KEYWORD", "ge") or is_current_token("OPERATOR", ">="))):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GE, 2)
+
+    elif ((is_current_token("KEYWORD", "ls")) or (is_current_token("OPERATOR", "<"))):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LS, 2)
+
+    elif ((is_current_token("KEYWORD", "le")) or (is_current_token("OPERATOR", "<="))):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LE, 2)
+
+    elif (is_current_token("KEYWORD", "eq")):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQ, 2)
+
+    elif (is_current_token("KEYWORD", "ne")):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NE, 2)
+
+def procBS():
+    print("procBS")
+    if (is_current_token("RESERVED", "not")):
+        read_NT()
+        procBP()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NOT, 1)
+    else:
+        procBP()
