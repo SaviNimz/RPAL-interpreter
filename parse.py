@@ -1,49 +1,16 @@
 from scanner import tokenize_file
 from enum import Enum,auto
+from collections import deque
+
 
 
 file_path = 'input.rpal'
+
+# here we have the tokens that are tokenized from the input file 
+
 tokens = tokenize_file(file_path)
+token_index = 0
 
-
-class ASTNodeType(Enum):
-    LET = 1
-    LAMBDA = 2
-    WHERE = 3
-    TAU = 4
-    AUG = 5
-    CONDITIONAL = 6
-    OR = 7
-    AND = 8
-    NOT = 9
-    GR = 10
-    GE = 11
-    LS = 12
-    LE = 13
-    EQ = 14
-    NE = 15
-    NEG = 16
-    PLUS = 17
-    MINUS = 18
-    MULT = 19
-    DIV = 20
-    EXP = 21
-    AT = 22
-    GAMMA = 23
-    TRUE = 24
-    FALSE = 25
-    NIL = 26
-    DUMMY = 27
-    WITHIN = 28
-    SIMULTDEF = 29
-    REC = 30
-    COMMA = 31
-    EQUAL = 32
-    FCNFORM = 33
-    PAREN = 34
-    IDENTIFIER = 35
-    INTEGER = 36
-    STRING = 37
 class TokenType(Enum):
     RESERVED = auto()
     OPERATOR = auto()
@@ -54,7 +21,46 @@ class TokenType(Enum):
     R_PAREN = auto()
     DELETE = auto()
     END_TOKEN = auto()
-   
+
+class ASTNodeType(Enum):
+    ASTNodeType_LET = auto()
+    ASTNodeType_LAMBDA = auto()
+    ASTNodeType_WHERE = auto()
+    ASTNodeType_TAU = auto()
+    ASTNodeType_AUG = auto()
+    ASTNodeType_CONDITIONAL = auto()
+    ASTNodeType_OR = auto()
+    ASTNodeType_AND = auto()
+    ASTNodeType_NOT = auto()
+    ASTNodeType_GR = auto()
+    ASTNodeType_GE = auto()
+    ASTNodeType_LS = auto()
+    ASTNodeType_LE = auto()
+    ASTNodeType_EQ = auto()
+    ASTNodeType_NE = auto()
+    ASTNodeType_NEG = auto()
+    ASTNodeType_PLUS = auto()
+    ASTNodeType_MINUS = auto()
+    ASTNodeType_MULT = auto()
+    ASTNodeType_DIV = auto()
+    ASTNodeType_EXP = auto()
+    ASTNodeType_AT = auto()
+    ASTNodeType_GAMMA = auto()
+    ASTNodeType_TRUE = auto()
+    ASTNodeType_FALSE = auto()
+    ASTNodeType_NIL = auto()
+    ASTNodeType_DUMMY = auto()
+    ASTNodeType_WITHIN = auto()
+    ASTNodeType_SIMULTDEF = auto()
+    ASTNodeType_REC = auto()
+    ASTNodeType_COMMA = auto()
+    ASTNodeType_EQUAL = auto()
+    ASTNodeType_FCNFORM = auto()
+    ASTNodeType_PAREN = auto()
+    ASTNodeType_IDENTIFIER = auto()
+    ASTNodeType_INTEGER = auto()
+    ASTNodeType_STRING = auto()
+
 class Token:
     def __init__(self, type, value, sourceLineNumber):
         self.type = type
@@ -70,8 +76,7 @@ class ASTNode:
         self.child = None
         self.sibling = None
 
-# we can use the following class to create stacks 
-        
+
 class Stack:
     def __init__(self):
         self.arr = []
@@ -88,13 +93,14 @@ class Stack:
         return len(self.arr) == 0
 
 
-stack = Stack(100)  # Initialize the stack with a given capacity
-currentToken = None  # Define currentToken
+stack = Stack()  # Initialize the stack with a given capacity
+
+# we use this token to loop through the array of tokens and this serves as a global pointer 
+currentToken = tokens[0] 
 
 def push(node):
     global stack
-    stack.top += 1
-    stack.arr[stack.top] = node
+    stack.push(node)
 
 def pop():
     global stack
@@ -105,6 +111,8 @@ def pop():
 def is_empty():
     global stack
     return stack.top == -1
+
+
 
 def print_ast(ast_node, depth):
     # Pre-order traversal
@@ -121,6 +129,8 @@ def print_stack():
         print_ast(stack.arr[i], 0)
         print()
 
+
+# We use the following function to build the AST using stack based approach
 def build_n_ary_ast_node(type, ariness):
     node = ASTNode(type)
     node.child = None
@@ -154,45 +164,41 @@ def is_current_token(type, value):
     return currentToken.type == type and currentToken.value == value
 
 
-# this function is responsible for advancing through token stream@
+# this function is responsible for advancing through token stream
 def read_NT():
+
     global currentToken, tokens, token_index
 
-    while True:
-        _token = tokens[token_index]
-        token_index += 1
-        currentToken.sourceLineNumber = _token.sourceLineNumber
-        currentToken.value = _token.value
+    _token = tokens[token_index]
+    token_index += 1
+    currentToken.sourceLineNumber = _token.sourceLineNumber
+    currentToken.value = _token.value
 
-        if _token.type == TokenType.RESERVED:
-            currentToken.type = ASTNodeType.LET
-        elif _token.type == TokenType.IDENTIFIER:
-            currentToken.type = ASTNodeType.IDENTIFIER
-        elif _token.type == TokenType.STRING:
-            currentToken.type = ASTNodeType.STRING
-        elif _token.type == TokenType.INTEGER:
-            currentToken.type = ASTNodeType.INTEGER
-        elif _token.type == TokenType.OPERATOR:
-            currentToken.type = ASTNodeType.OPERATOR
-        elif _token.type == TokenType.L_PAREN:
-            if _token.value == "(":
-                currentToken.type = ASTNodeType.PAREN
-        elif _token.type == TokenType.END_TOKEN:
-            currentToken.value = None
-            currentToken.type = ASTNodeType.DUMMY
-
-        if not is_current_token_type(TokenType.DELETE):
-            break
+    if _token.type == "KEYWORD":
+        currentToken.type = "RESERVED"
+    elif _token.type == "IDENTIFIER":
+        currentToken.type = "IDENTIFIER"
+    elif _token.type == "INTEGER":
+        currentToken.type = "INTEGER"
+    elif _token.type == "OPERATOR":
+        currentToken.type = "OPERATOR"
+    elif _token.type == "STRING":
+        currentToken.type = "STRING"
+    elif _token.type == "PUNCTUATION":
+        currentToken.type = "PUNCTUATION"
 
     if currentToken.value is not None:
-        if currentToken.type == ASTNodeType.IDENTIFIER:
-            node = create_terminal_ast_node(ASTNodeType.IDENTIFIER, currentToken.value, currentToken.sourceLineNumber)
-        elif currentToken.type == ASTNodeType.INTEGER:
-            node = create_terminal_ast_node(ASTNodeType.INTEGER, currentToken.value, currentToken.sourceLineNumber)
-        elif currentToken.type == ASTNodeType.STRING:
-            node = create_terminal_ast_node(ASTNodeType.STRING, currentToken.value, currentToken.sourceLineNumber)
+        if currentToken.type == "IDENTIFIER":
+            node = create_terminal_ast_node(ASTNodeType.ASTNodeType_IDENTIFIER, currentToken.value, currentToken.sourceLineNumber)
+        elif currentToken.type == "INTEGER":
+            node = create_terminal_ast_node(ASTNodeType.ASTNodeType_INTEGER, currentToken.value, currentToken.sourceLineNumber)
+        elif currentToken.type == "STRING":
+            node = create_terminal_ast_node(ASTNodeType.ASTNodeType_STRING, currentToken.value, currentToken.sourceLineNumber)
 
+    # update the current token
+    currentToken = tokens[token_index]
 
-
-
-
+for i in range(10):
+    print(token_index)
+    read_NT()
+    
