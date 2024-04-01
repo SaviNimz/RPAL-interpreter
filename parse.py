@@ -258,9 +258,13 @@ def procT():
         if (treesToPop > 0):
 
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_TAU,treesToPop+1)
-
-
-
+def procTA():
+    print("procTA")
+    procTC()
+    while (is_current_token("KEYWORD", "aug")):
+        read_NT()
+        procTC()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AUG,2)    
 def procTC():
     print("ProcTC")
     procB()
