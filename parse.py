@@ -245,3 +245,16 @@ def procEW():
         proc_DR()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_WHERE,2)
 
+def procT():
+    print("procT")
+    procTA()
+    #extra readToken() in procTA()
+    treesToPop = 0
+    while (is_current_token("OPERATOR",",")):
+        read_NT()
+        procTA()
+
+        treesToPop += treesToPop
+        if (treesToPop > 0):
+
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_TAU,treesToPop+1)
