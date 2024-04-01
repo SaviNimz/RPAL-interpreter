@@ -104,16 +104,14 @@ def push(node):
     stack.push(node)
 
 def pop():
+    
     global stack
-    node = stack.arr[stack.top]
-    stack.top -= 1
+    node = stack.pop()
     return node
 
 def is_empty():
     global stack
     return stack.top == -1
-
-
 
 def print_ast(ast_node, depth):
     # Pre-order traversal
@@ -129,8 +127,6 @@ def print_stack():
     for i in range(stack.top + 1):
         print_ast(stack.arr[i], 0)
         print()
-
-
 
 # We use the following function to build the AST using stack based approach
 def build_n_ary_ast_node(type, ariness):
@@ -163,8 +159,7 @@ def is_current_token_type(type):
 
 def is_current_token(type, value):
     global currentToken
-    return currentToken.type == type and currentToken.value == value
-
+    return (currentToken.type == type and currentToken.value == value)
 
 # this function is responsible for advancing through token stream
 def read_NT():
@@ -200,3 +195,411 @@ def read_NT():
     # update the current token
     currentToken = tokens[token_index]
 
+def procE():
+    print("procE")
+    if (is_current_token("KEYWORD","let")):
+        #read the non-terminal function
+        read_NT()
+        procD()
+        if not (is_current_token("KEYWORD","in")):
+            print("E: 'in' expected")
+            exit(0)
+        #read the non-terminal function
+        read_NT()
+        procE()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LET, 2)
+
+    elif (is_current_token("KEYWORD","fn")):
+        treesToPop = 0
+        read_NT()
+        # putting punctuation here is a problem
+        while (is_current_token_type("KEYWORD") and is_current_token_type("PUNCTUATION")):
+            procVB()
+            treesToPop += 1
+            if (treesToPop == 0):
+                print("E: atleast one 'Vb' expected" )
+
+            if not (is_current_token("OPERATOR", ".")):
+                print("E: '.' expected ")
+
+            read_NT()
+            procE()
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_LAMBDA,treesToPop+1)
+    else:
+        procEW()
+
+def procEW():
+    #T ’where’ DR
+    print("procEW")
+    procT()
+    if(is_current_token("KEYWORD","where")):
+        read_NT()
+        procDR()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_WHERE,2)
+
+def procT():
+    print("procT")
+    procTA()
+    #extra readToken() in procTA()
+    treesToPop = 0
+    while (is_current_token("OPERATOR",",")):
+        read_NT()
+        procTA()
+
+        treesToPop += treesToPop
+        if (treesToPop > 0):
+
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_TAU,treesToPop+1)
+
+def procTA():
+    print("procTA")
+    procTC()
+    while (is_current_token("KEYWORD", "aug")):
+        read_NT()
+        procTC()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AUG,2) 
+
+def procTC():
+    print("ProcTC")
+    procB()
+    if(is_current_token("OPERATOR","->")):
+        read_NT()
+        procTC()
+
+        if not (is_current_token("OPERATOR", "|")):
+            print("TC: '|' expected\n")
+        
+        read_NT()
+        procTC()
+
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_CONDITIONAL, 3)
+
+def procB():
+    print("procB")
+    procBT()
+    # extra read_NT in proc_BT()
+    while (is_current_token("KEYWORD", "or")):
+        read_NT()
+        procBT()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_OR, 2)
+
+def procBT():
+    print("procBT")
+    procBS()
+    # extra read_NT in proc_BS()
+    while is_current_token("OPERATOR", "&"):
+        read_NT()
+        procBS()
+        # extra read_NT in proc_BS()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AND, 2)
+
+def procBP():
+    print("procBP")
+    procA()
+    # Bp -> A('gr' | '>' ) A => 'gr'
+    if ((is_current_token("KEYWORD", "gr") or is_current_token("OPERATOR", ">"))):
+        read_NT()
+        procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GR, 2)
+
+    #Bp -> A ('ge' | '>=') A => 'ge'
+    elif ((is_current_token("KEYWORD", "ge") or is_current_token("OPERATOR", ">="))):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GE, 2)
+
+    elif ((is_current_token("KEYWORD", "ls")) or (is_current_token("OPERATOR", "<"))):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LS, 2)
+
+    elif ((is_current_token("KEYWORD", "le")) or (is_current_token("OPERATOR", "<="))):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LE, 2)
+
+    elif (is_current_token("KEYWORD", "eq")):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQ, 2)
+
+    elif (is_current_token("KEYWORD", "ne")):
+        read_NT()
+        procA()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NE, 2)
+
+def procBS():
+    print("procBS")
+    if (is_current_token("RESERVED", "not")):
+        read_NT()
+        procBP()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NOT, 1)
+    else:
+        procBP()
+
+def procAF():
+    print("procAF")
+    if (is_current_token("OPERATOR", "**")):
+        read_NT()
+        procAF()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_EXP, 2)
+
+def procAT():
+    print("procAT")
+    procAF()
+    #At -> Af;
+    #extra readNT in procAF()
+    mult = True
+    while ((is_current_token("OPERATOR", "*")) or (is_current_token("OPERATOR", "/"))):
+
+        if (currentToken.value == "*"):
+            mult = True
+        elif(currentToken.value == "/"):
+            mult = False
+        read_NT()
+        procAF()
+
+        if(mult):
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_MULT, 2)
+        else:
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_DIV, 2)
+
+def procA():
+    print("procA")
+
+    if (is_current_token("OPERATOR", "+")):
+        read_NT()
+        procAT()
+        # extra readNT in procAT()
+
+    elif (is_current_token("OPERATOR", "-")):
+        #A -> '-' At => 'neg'
+        read_NT()
+        procAT()
+        # extra readNT in procA()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NEG, 1)
+
+    plus=True
+
+    while (is_current_token("OPERATOR", "+") or is_current_token("OPERATOR", "-")):
+        if(currentToken.value == "+"):
+            plus = True
+        elif(currentToken.value == "-"):
+            plus = False
+
+        read_NT()
+        procAT()
+
+        if(plus):
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_PLUS, 2)
+        else:
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_MINUS, 2)
+
+def procAP():
+    print("procAP")
+    procR()
+    while (is_current_token("OPERATOR", "@")):
+        read_NT()
+        if(not is_current_token("IDENTIFIER")):
+           print("AP: expected Identifier")
+        read_NT()
+
+        procR()
+
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AT, 3)
+
+def procRN():
+    print("procRN")
+    #if (is_current_token("IDENTIFIER") or is_current_token("INTEGER") or is_current_token("STRING")):
+    #R -> '<IDENTIFIER>', R -> '<INTEGER>', R-> '<STRING>'
+    #No need to do anything, as these are already processed in procR()
+    
+    if (is_current_token("KEYWORD", "True")):
+        create_terminal_ast_node(ASTNodeType.ASTNodeType_TRUE,"true",currentToken.sourceLineNumber)
+        read_NT()
+
+    elif (is_current_token("KEYWORD", "False")):
+        create_terminal_ast_node(ASTNodeType.ASTNodeType_FALSE,"false",currentToken.sourceLineNumber)
+        read_NT()
+
+    elif (is_current_token("KEYWORD", "nil")):
+        create_terminal_ast_node(ASTNodeType.ASTNodeType_NIL,"nil",currentToken.sourceLineNumber)
+        read_NT()
+
+    elif (is_current_token_type("L_PAREN")):
+        read_NT()
+        procE()
+
+        if not (is_current_token_type("R_PAREN")):
+           #Replace with appropriate error handling
+           print("RN: ')' expected")
+
+    elif (is_current_token_type("KEYWORD" "dummy")):
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_DUMMY, "dummy", currentToken.sourceLineNumber)
+        read_NT()
+    pass
+
+def procR():
+    print("procR")
+    while (is_current_token("IDENTIFIER") or 
+            is_current_token("INTEGER") or 
+            is_current_token("STRING") or 
+            is_current_token("KEYWORD", "True") or 
+            is_current_token("KEYWORD", "False") or 
+            is_current_token("KEYWORD", "nil") or 
+            is_current_token("KEYWORD", "dummy") or 
+            is_current_token("L_PAREN")):
+
+        procRN()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GAMMA, 2)
+        read_NT()
+
+def procDR():
+    print("procDR")
+    
+    if (is_current_token("KEYWORD", "rec")):
+        read_NT()
+        procDB()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_REC, 1)
+
+    else:
+        procDB()
+
+def procDA():
+    print("procDA")
+    procDR()
+
+    treesToPop = 0
+    
+    while (is_current_token("KEYWORD", "and")):
+        read_NT()
+        procDR()
+        #pop thing
+    
+    if (treesToPop > 0):
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_SIMULTDEF, treesToPop + 1)
+
+def procD():
+    print("procD")
+    procDA()
+    if (is_current_token("KEYWORD", "within")):
+        read_NT()
+        procD()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_WITHIN, 2)
+
+def procDB():
+    print("procDB")
+    
+    if (is_current_token_type("L_PAREN")):
+        read_NT()
+        procD()
+        read_NT()
+
+        if(not is_current_token_type("R_PAREN")):
+           print("Error handling")
+        
+        read_NT()
+    
+    elif (is_current_token_type("IDENTIFIER")):
+        read_NT()
+
+        if (is_current_token_type("OPERATOR", ",")):
+            read_NT()
+            procVB()
+
+            if not (is_current_token("OPERATOR","=")):
+                print("DB: = expected.")
+            
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA,2)
+            read_NT()
+            procE()
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQUAL,2)
+
+        else:
+            if(is_current_token("OPERATOR", "=")):
+
+                read_NT()
+                procE()
+                build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQUAL,2)
+            
+            else:
+                treesToPop = 0
+
+                while(is_current_token_type("IDENTIFIER") or is_current_token_type("L_PAREN")):
+                    procVB()
+                    treesToPop += 1
+
+                if(treesToPop == 0):
+                    print("E: at least one 'Vb' expected")
+                
+                read_NT()
+                procE()
+
+                build_n_ary_ast_node(ASTNodeType.ASTNodeType_FCNFORM,treesToPop+2)
+
+def procVB():
+    print("procVB")
+    
+    if (is_current_token_type("IDENTIFIER")):
+        #Vb -> '<IDENTIFIER>'
+        read_NT()
+
+    elif (is_current_token_type("L_PAREN")):
+        read_NT()
+        if (is_current_token_type("R_PAREN")):
+        #Vb -> '(' ')' => '()'
+            create_terminal_ast_node(ASTNodeType.ASTNodeType_PAREN, "", currentToken.sourceLineNumber)
+            read_NT()
+
+    else:
+        procVL()
+        if (not is_current_token_type("R_PAREN")):
+            print("VB: ')' expected")
+            read_NT()
+
+def procVL():
+    print("procVL")
+
+    if not  (is_current_token_type("IDENTIFIER")):
+        print("VL: Identifier expected")
+
+    else:
+        read_NT()
+        treesToPop=0
+        while (is_current_token("OPERATOR", ",")):
+            read_NT()
+            if (not is_current_token_type("IDENTIFIER")):
+                print("VL: Identifier expected")
+                read_NT()
+                treesToPop += 1
+            
+        if (treesToPop>0):
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA, treesToPop + 1)
+
+
+
+def startParse():
+
+    read_NT()
+    procE()
+
+    if(currentToken.value != None):
+        print(currentToken.value)
+
+def buildAST():
+
+    startParse()
+
+    return pop()
+
+
+root = buildAST()
+
+print_ast(root,0)
+print(root)
