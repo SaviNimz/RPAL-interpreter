@@ -92,8 +92,9 @@ class Stack:
     def is_empty(self):
         return len(self.arr) == 0
 
-
-stack = Stack()  # Initialize the stack with a given capacity
+#initialize the global stack
+    
+stack = Stack()  
 
 # we use this token to loop through the array of tokens and this serves as a global pointer 
 currentToken = tokens[0] 
@@ -128,6 +129,7 @@ def print_stack():
     for i in range(stack.top + 1):
         print_ast(stack.arr[i], 0)
         print()
+
 
 
 # We use the following function to build the AST using stack based approach
@@ -198,7 +200,3 @@ def read_NT():
     # update the current token
     currentToken = tokens[token_index]
 
-for i in range(10):
-    print(token_index)
-    read_NT()
-    
