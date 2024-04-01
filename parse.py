@@ -461,3 +461,88 @@ def procR():
         read_NT()
 
 
+def procDR():
+    print("procDR")
+    
+    if (is_current_token("KEYWORD", "rec")):
+        read_NT()
+        procDB()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_REC, 1)
+
+    else:
+        procDB()
+
+def procDA():
+    print("procDA")
+    procDR()
+
+    treesToPop = 0
+    
+    while (is_current_token("KEYWORD", "and")):
+        read_NT()
+        procDR()
+        #pop thing
+    
+    if (treesToPop > 0):
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_SIMULTDEF, treesToPop + 1)
+
+def procD():
+    print("procD")
+    procDA()
+    if (is_current_token("KEYWORD", "within")):
+        read_NT()
+        procD()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_WITHIN, 2)
+
+
+def procDB():
+    print("procDB")
+    
+    if (is_current_token_type("L_PAREN")):
+        read_NT()
+        procD()
+        read_NT()
+
+        if(not is_current_token_type("R_PAREN")):
+           print("Error handling")
+        
+        read_NT()
+    
+    elif (is_current_token_type("IDENTIFIER")):
+        read_NT()
+
+        if (is_current_token_type("OPERATOR", ",")):
+            read_NT()
+            procVB()
+
+            if not (is_current_token("OPERATOR","=")):
+                print("DB: = expected.")
+            
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA,2)
+            read_NT()
+            procE()
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQUAL,2)
+
+        else:
+            if(is_current_token("OPERATOR", "=")):
+
+                read_NT()
+                procE()
+                build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQUAL,2)
+            
+            else:
+                treesToPop = 0
+
+                while(is_current_token_type("IDENTIFIER") or is_current_token_type("L_PAREN")):
+                    procVB()
+                    treesToPop += 1
+
+                if(treesToPop == 0):
+                    print("E: at least one 'Vb' expected")
+                
+                read_NT()
+                procE()
+
+                build_n_ary_ast_node(ASTNodeType.ASTNodeType_FCNFORM,treesToPop+2)
+
+
