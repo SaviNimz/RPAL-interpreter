@@ -546,3 +546,41 @@ def procDB():
                 build_n_ary_ast_node(ASTNodeType.ASTNodeType_FCNFORM,treesToPop+2)
 
 
+def procVB():
+    print("procVB")
+    
+    if (is_current_token_type("IDENTIFIER")):
+        #Vb -> '<IDENTIFIER>'
+        read_NT()
+
+    elif (is_current_token_type("L_PAREN")):
+        read_NT()
+        if (is_current_token_type("R_PAREN")):
+        #Vb -> '(' ')' => '()'
+            create_terminal_ast_node(ASTNodeType.ASTNodeType_PAREN, "", currentToken.sourceLineNumber)
+            read_NT()
+
+    else:
+        procVL()
+        if (not is_current_token_type("R_PAREN")):
+            print("VB: ')' expected")
+            read_NT()
+
+def procVL():
+    print("procVL")
+
+    if not  (is_current_token_type("IDENTIFIER")):
+        print("VL: Identifier expected")
+
+    else:
+        read_NT()
+        treesToPop=0
+        while (is_current_token("OPERATOR", ",")):
+            read_NT()
+            if (not is_current_token_type("IDENTIFIER")):
+                print("VL: Identifier expected")
+                read_NT()
+                treesToPop += 1
+            
+        if (treesToPop>0):
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA, treesToPop + 1)
