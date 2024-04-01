@@ -363,22 +363,21 @@ def procAT():
     procAF()
     #At -> Af;
     #extra readNT in procAF()
-    bool mult = True
-    while ((is_current_token(OPERATOR, "*")) or (is_current_token(OPERATOR, "/"))):
-        #if (strcmp(currentToken.value, "*") == 0)
-         #   mult = true;
-        #else if (strcmp(currentToken.value, "/") == 0)
-         #   mult = false;
-        #readNT();
-        #procAF();
-        #extra readNT in procAF()
-        #if (mult) // At -> At '' Af => ''
-        #   buildNAryASTNode(ASTNodeType_MULT, 2);
-        #else // At -> At '/' Af => '/'
-        #   buildNAryASTNode(ASTNodeType_DIV, 2);
-        pass
+    mult = True
+    while ((is_current_token("OPERATOR", "*")) or (is_current_token("OPERATOR", "/"))):
 
-# fix this 
+        if (currentToken.value == "*"):
+            mult = True
+        elif(currentToken.value == "/"):
+            mult = False
+        read_NT()
+        procAF()
+
+        if(mult):
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_MULT, 2)
+        else:
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_DIV, 2)
+
 
 def procA():
     print("procA")
@@ -395,9 +394,21 @@ def procA():
         # extra readNT in procA()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_NEG, 1)
 
-    bool plus=True
+    plus=True
+
     while (is_current_token("OPERATOR", "+") or is_current_token("OPERATOR", "-")):
-        if(currentToken.value) 
+        if(currentToken.value == "+"):
+            plus = True
+        elif(currentToken.value == "-"):
+            plus = False
+
+        read_NT()
+        procAT()
+
+        if(plus):
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_PLUS, 2)
+        else:
+            build_n_ary_ast_node(ASTNodeType.ASTNodeType_MINUS, 2)
 
 
 def procAP():
@@ -412,7 +423,7 @@ def procAP():
         procR()
 
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_AT, 3)
-# this is finished
+
 
 def procRN():
     print("procRN")
