@@ -235,3 +235,13 @@ def procE():
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_LAMBDA,treesToPop+1)
     else:
         procEW()
+
+def procEW():
+    #T ’where’ DR
+    print("procEW")
+    procT()
+    if(is_current_token("KEYWORD","where")):
+        read_NT()
+        proc_DR()
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_WHERE,2)
+
