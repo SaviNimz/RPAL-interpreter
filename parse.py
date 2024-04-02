@@ -23,7 +23,6 @@ class ASTNode:
 
             self.sibling.print_tree()
 
-    # output to the file
     def print_tree_to_file(self, file):
 
         for i in range(self.indentation):
@@ -50,17 +49,6 @@ class TreeNode:
         child.parent = self
         self.children.append(child)
 
-    # def print_tree(self):
-    #
-    #     print("parent node : " + self.data)
-    #     if self.children:
-    #         count = 0
-    #         for child in self.children:
-    #             print("child node : " + child.data)
-    #         for child in self.children:
-    #             child.print_tree()
-
-    # pre-order traversal of n araay tree
     def print_tree(self):
         print(self.data)
         if self.children:
@@ -592,14 +580,10 @@ class ASTParsser:
                 self.buildTree(',', trees_to_pop +1)  # +1 for the first identifier
 
 
-
-
-
 import sys
-input_path=sys.argv[1]
+input_path="tests/test_1.txt"
 with open(input_path) as file:
-    program = file.read();
-    # print(program)
+    program = file.read()
 
 stack = []
 tokens = []
@@ -617,10 +601,9 @@ while token.type != Tokenizer.TokenType.EOF:
 
 screener = Screener(tokens)
 tokens = screener.screen()
-# parse input
+
 print(" after screening ")
-# for token in tokens:
-#     # print(token.type, token.value)
+
 parser = ASTParsser()
 parser.tokens = tokens
 parser.current_token = tokens[0]

@@ -334,5 +334,5 @@ while token.type != TokenType.EOF:
 screener = Screener(tokens)
 tokens = screener.screen()
 
-for t in tokens:
-    print(t.value)
+# for t in tokens:
+#     print(t.value)
