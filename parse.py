@@ -586,6 +586,7 @@ def procVB():
         print("Error: IF or ( is expected)")
         return
 
+# ********************************************************************
 def procVL():
     print("procVL")
 
@@ -597,7 +598,7 @@ def procVL():
         treesToPop=0
         while (is_current_token("OPERATOR", ",")):
             read_NT()
-            if (not is_current_token_type("IDENTIFIER")):
+            if not  (is_current_token_type("IDENTIFIER")):
                 print("VL: Identifier expected")
                 read_NT()
                 treesToPop += 1
