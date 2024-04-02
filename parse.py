@@ -496,10 +496,10 @@ class ASTParsser:
             print('Db->( D )')
             self.buildTree("()", 1)
 
-        elif self.current_token.type == Tokernizer.TokenType.ID:
+        elif self.current_token.type == Tokenizer.TokenType.ID:
             self.read()
 
-            if self.current_token.type == Tokernizer.TokenType.COMMA:
+            if self.current_token.type == Tokenizer.TokenType.COMMA:
                 # Db -> Vl '=' E => '='
                 self.read()
                 self.procVb()
@@ -521,7 +521,7 @@ class ASTParsser:
                 else :
 
                     n = 0
-                    while self.current_token.type == Tokernizer.TokenType.ID or self.current_token.value == '(':
+                    while self.current_token.type == Tokenizer.TokenType.ID or self.current_token.value == '(':
                         self.procVb()
                         n += 1
 
@@ -537,20 +537,11 @@ class ASTParsser:
                     print('Db->identifier Vb+ = E')
                     self.buildTree("function_form", n + 2)
 
-        # else:
-        #     self.procVL()
-        #     print(self.current_token.value)
-        #     if self.current_token.value != '=':
-        #         print("Error: = is expected")
-        #         return
-        #     self.read()
-        #     self.procE()
-        #     print('Db->Vl = E')
-        #     self.buildTree("=", 2)
+
 
     def procVb(self):
         print('procVb')
-        if self.current_token.type == Tokernizer.TokenType.ID:
+        if self.current_token.type == Tokenizer.TokenType.ID:
             self.read()
             print('Vb->id')
             # self.buildTree("id", 1)
@@ -580,7 +571,7 @@ class ASTParsser:
         print("procVL")
         print("559 "+str(self.current_token.value))
 
-        if self.current_token.type != Tokernizer.TokenType.ID:
+        if self.current_token.type != Tokenizer.TokenType.ID:
             print("562 VL: Identifier expected")  # Replace with appropriate error handling
         else:
             print('VL->' + self.current_token.value)
@@ -590,7 +581,7 @@ class ASTParsser:
             while self.current_token.value == ',':
                 # Vl -> '<IDENTIFIER>' list ',' => ','?;
                 self.read()
-                if self.current_token.type != Tokernizer.TokenType.ID:
+                if self.current_token.type != Tokenizer.TokenType.ID:
                     print(" 572 VL: Identifier expected")  # Replace with appropriate error handling
                 self.read()
                 print('VL->id , ?')
@@ -613,13 +604,13 @@ with open(input_path) as file:
 stack = []
 tokens = []
 # tokenize input
-tokenizer = Tokernizer.Tokenizer(program)
+tokenizer = Tokenizer.Tokenizer(program)
 token = tokenizer.get_next_token()
 print(token.type, token.value)
-while token.type != Tokernizer.TokenType.EOF:
+while token.type != Tokenizer.TokenType.EOF:
     print(token.type, token.value)
-    if token.value in Tokernizer.RESERVED_KEYWORDS:
-        token.type = Tokernizer.TokenType.RESERVED_KEYWORD
+    if token.value in Tokenizer.RESERVED_KEYWORDS:
+        token.type = Tokenizer.TokenType.RESERVED_KEYWORD
 
     tokens.append(token)
     token = tokenizer.get_next_token()
