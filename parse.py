@@ -103,11 +103,11 @@ currentToken = tokens[0]
 def push(node):
     global stack
     stack.push(node)
+    print(print_ast(stack.arr[0],0))
 
 def pop():
     
     global stack
-    print(stack.arr[0].type)
     node = stack.pop()
     return node
 
@@ -140,9 +140,9 @@ def build_n_ary_ast_node(type, ariness):
     # node.child = None
     # node.sibling = None
 
-
     while ariness > 0:
         child = pop()  # Assuming there's a function pop() to retrieve child nodes
+        print(child.value,"is the child")
         if node.child is not None:
             child.sibling = node.child
         node.child = child
@@ -167,43 +167,24 @@ def is_current_token(type, value):
     global currentToken
     print(currentToken.type,currentToken.value)
     return (currentToken.type == type and currentToken.value == value)
-
 # this function is responsible for advancing through token stream
 def read_NT():
 
-    print('hi')
     global currentToken, tokens, token_index
+    print(token_index)
+    if(token_index < len(tokens)):
+        currentToken = tokens[token_index]
+        token_index += 1
+        if currentToken.value is not None:
+            if currentToken.type == "IDENTIFIER":
+                node = create_terminal_ast_node(ASTNodeType.ASTNodeType_IDENTIFIER, currentToken.value, currentToken.sourceLineNumber)
+            elif currentToken.type == "INTEGER":
+                node = create_terminal_ast_node(ASTNodeType.ASTNodeType_INTEGER, currentToken.value, currentToken.sourceLineNumber)
+            elif currentToken.type == "STRING":
+                node = create_terminal_ast_node(ASTNodeType.ASTNodeType_STRING, currentToken.value, currentToken.sourceLineNumber)
+    else:
+        pass
 
-    _token = tokens[token_index]
-
-    print('up')
-    token_index += 1
-    currentToken.sourceLineNumber = _token.sourceLineNumber
-    currentToken.value = _token.value
-
-    if _token.type == "KEYWORD":
-        currentToken.type = "KEYWORD"
-    elif _token.type == "IDENTIFIER":
-        currentToken.type = "IDENTIFIER"
-    elif _token.type == "INTEGER":
-        currentToken.type = "INTEGER"
-    elif _token.type == "OPERATOR":
-        currentToken.type = "OPERATOR"
-    elif _token.type == "STRING":
-        currentToken.type = "STRING"
-    elif _token.type == "PUNCTUATION":
-        currentToken.type = "PUNCTUATION"
-
-    if currentToken.value is not None:
-        if currentToken.type == "IDENTIFIER":
-            node = create_terminal_ast_node(ASTNodeType.ASTNodeType_IDENTIFIER, currentToken.value, currentToken.sourceLineNumber)
-        elif currentToken.type == "INTEGER":
-            node = create_terminal_ast_node(ASTNodeType.ASTNodeType_INTEGER, currentToken.value, currentToken.sourceLineNumber)
-        elif currentToken.type == "STRING":
-            node = create_terminal_ast_node(ASTNodeType.ASTNodeType_STRING, currentToken.value, currentToken.sourceLineNumber)
-
-    # update the current token
-    currentToken = tokens[token_index]
 
 def procE():
     print("procE")
@@ -211,7 +192,7 @@ def procE():
         #read the non-terminal function
         read_NT()
         procD()
-        if not (is_current_token("KEYWORD","in")):
+        if (is_current_token("KEYWORD","in") == False):
             print("E: 'in' expected")
             exit(0)
         #read the non-terminal function
@@ -304,6 +285,10 @@ def procBT():
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_AND, 2)
 
 def procBP():
+
+    global currentToken
+    print('I am at proc BP')
+    print(currentToken.value)
     print("procBP")
     procA()
     # Bp -> A('gr' | '>' ) A => 'gr'
@@ -353,9 +338,15 @@ def procBS():
     else:
         procBP()
 
+
+# this also looks problematic
+# *****************************************************************************
 def procAF():
     print("procAF")
-    if (is_current_token("OPERATOR", "**")):
+
+    procAP()
+
+    while(is_current_token("OPERATOR", "**")):
         read_NT()
         procAF()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_EXP, 2)
@@ -380,6 +371,8 @@ def procAT():
         else:
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_DIV, 2)
 
+
+# this looks problematic
 def procA():
     print("procA")
 
@@ -394,15 +387,20 @@ def procA():
         procAT()
         # extra readNT in procA()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_NEG, 1)
-
+    else:
+        procAT()
     plus=True
+    print('while loop ekahh')
+    while (True):
 
-    while (is_current_token("OPERATOR", "+") or is_current_token("OPERATOR", "-")):
+        print("athulata aawa")
+
+        if (is_current_token("OPERATOR", "+") or is_current_token("OPERATOR", "-")):
+            break
         if(currentToken.value == "+"):
             plus = True
         elif(currentToken.value == "-"):
             plus = False
-
         read_NT()
         procAT()
 
@@ -455,19 +453,22 @@ def procRN():
         read_NT()
     pass
 
+
+# there is an error here
+# ***************************************************************************************************
 def procR():
     print("procR")
-    while (is_current_token("IDENTIFIER") or 
-            is_current_token("INTEGER") or 
-            is_current_token("STRING") or 
+    while ((is_current_token_type("IDENTIFIER") or is_current_token_type("INTEGER") or 
+            is_current_token_type("STRING") or 
             is_current_token("KEYWORD", "True") or 
             is_current_token("KEYWORD", "False") or 
             is_current_token("KEYWORD", "nil") or 
             is_current_token("KEYWORD", "dummy") or 
-            is_current_token("L_PAREN")):
-
+            is_current_token_type("L_PAREN"))):
         procRN()
+        
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_GAMMA, 2)
+
         read_NT()
 
 def procDR():
@@ -517,6 +518,7 @@ def procDB():
         read_NT()
     
     elif (is_current_token_type("IDENTIFIER")):
+
         read_NT()
         if (is_current_token("OPERATOR", ",")):
             read_NT()
@@ -591,7 +593,6 @@ def procVL():
         if (treesToPop>0):
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA, treesToPop + 1)
 
-
 def startParse():
 
     read_NT()
@@ -606,7 +607,9 @@ def buildAST():
 
     return pop()
 
-
 root = buildAST()
 
 print_ast(root,0)
+
+print(root)
+print('hello world')
