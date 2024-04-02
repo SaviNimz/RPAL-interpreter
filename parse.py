@@ -1,628 +1,644 @@
-from scanner import tokenize_file
-from enum import Enum,auto
-from collections import deque
+import Tokenizer
+from Tokenizer import Screener
 
 
-
-file_path = 'input.rpal'
-
-# here we have the tokens that are tokenized from the input file 
-
-tokens = tokenize_file(file_path)
-
-token_index = 0
-
-class TokenType(Enum):
-    RESERVED = auto()
-    OPERATOR = auto()
-    IDENTIFIER = auto()
-    L_PAREN = auto()
-    INTEGER = auto()
-    STRING = auto()
-    R_PAREN = auto()
-    DELETE = auto()
-    END_TOKEN = auto()
-
-class ASTNodeType(Enum):
-    ASTNodeType_LET = auto()
-    ASTNodeType_LAMBDA = auto()
-    ASTNodeType_WHERE = auto()
-    ASTNodeType_TAU = auto()
-    ASTNodeType_AUG = auto()
-    ASTNodeType_CONDITIONAL = auto()
-    ASTNodeType_OR = auto()
-    ASTNodeType_AND = auto()
-    ASTNodeType_NOT = auto()
-    ASTNodeType_GR = auto()
-    ASTNodeType_GE = auto()
-    ASTNodeType_LS = auto()
-    ASTNodeType_LE = auto()
-    ASTNodeType_EQ = auto()
-    ASTNodeType_NE = auto()
-    ASTNodeType_NEG = auto()
-    ASTNodeType_PLUS = auto()
-    ASTNodeType_MINUS = auto()
-    ASTNodeType_MULT = auto()
-    ASTNodeType_DIV = auto()
-    ASTNodeType_EXP = auto()
-    ASTNodeType_AT = auto()
-    ASTNodeType_GAMMA = auto()
-    ASTNodeType_TRUE = auto()
-    ASTNodeType_FALSE = auto()
-    ASTNodeType_NIL = auto()
-    ASTNodeType_DUMMY = auto()
-    ASTNodeType_WITHIN = auto()
-    ASTNodeType_SIMULTDEF = auto()
-    ASTNodeType_REC = auto()
-    ASTNodeType_COMMA = auto()
-    ASTNodeType_EQUAL = auto()
-    ASTNodeType_FCNFORM = auto()
-    ASTNodeType_PAREN = auto()
-    ASTNodeType_IDENTIFIER = auto()
-    ASTNodeType_INTEGER = auto()
-    ASTNodeType_STRING = auto()
-
-class Token:
-    def __init__(self, type, value, sourceLineNumber):
-        self.type = type
-        self.value = value
-        self.sourceLineNumber = sourceLineNumber
-
-# we can use objects of this class to create abstract syntax tree node objects 
 class ASTNode:
-    def __init__(self, type, value, sourceLineNumber):
+
+    def __init__(self, type):
         self.type = type
-        self.value = value
-        self.sourceLineNumber = sourceLineNumber
+        self.value = None
+        self.sourceLineNumber = -1
         self.child = None
         self.sibling = None
+        self.indentation = 0
+
+    def print_tree(self):
+        print(self.type)
+
+        if self.child:
+            print(" child of " + str(self.type) + " is ",end=" ")
+            self.child.print_tree()
+        if self.sibling:
+            print(" sibling of " + str(self.type) + " is " ,end=" ")
+
+            self.sibling.print_tree()
+
+    # output to the file
+    def print_tree_to_file(self, file):
+
+        for i in range(self.indentation):
+            file.write(".")
+        # if(self.type ==)
+        file.write(str(self.type) + "\n")
+
+        if self.child:
+
+            self.child.indentation = self.indentation + 1
+            self.child.print_tree_to_file(file)
+        if self.sibling:
+            self.sibling.indentation = self.indentation
+            self.sibling.print_tree_to_file(file)
 
 
-class Stack:
-    def __init__(self):
-        self.arr = []
-    
-    def push(self, node):
-        self.arr.append(node)
-    
-    def pop(self):
-        if self.arr:
-            return self.arr.pop()
-        return None
-    
-    def is_empty(self):
-        return len(self.arr) == 0
+class TreeNode:
+    def __init__(self, data):
+        self.data = data
+        self.children = []
+        self.parent = None
 
-#initialize the global stack
-    
-stack = Stack()  
+    def add_child(self, child):
+        child.parent = self
+        self.children.append(child)
 
-# we use this token to loop through the array of tokens and this serves as a global pointer 
-currentToken = tokens[0] 
+    # def print_tree(self):
+    #
+    #     print("parent node : " + self.data)
+    #     if self.children:
+    #         count = 0
+    #         for child in self.children:
+    #             print("child node : " + child.data)
+    #         for child in self.children:
+    #             child.print_tree()
 
-def push(node):
-    global stack
-    stack.push(node)
-    print(print_ast(stack.arr[0],0))
-
-def pop():
-    
-    global stack
-    node = stack.pop()
-    return node
-
-def is_empty():
-    global stack
-    return stack.top == -1
-
-def print_ast(ast_node, depth):
-    if ast_node is None:
-        return
-    # Pre-order traversal
-    print("-" * depth, ast_node.type, ast_node.value if ast_node.value is not None else "")
-    if ast_node.child is not None:
-        print_ast(ast_node.child, depth + 1)
-    if ast_node.sibling is not None:
-        print_ast(ast_node.sibling, depth)
-
-def print_stack():
-    global stack
-    print("\nStack:", stack.top)
-    for i in range(stack.top + 1):
-        print_ast(stack.arr[i], 0)
-        print()
-
-# We use the following function to build the AST using stack based approach
-def build_n_ary_ast_node(type, ariness):
-
-    print("heyy someone called me !!")
-    node = ASTNode(type,None,-1)
-    # node.child = None
-    # node.sibling = None
-
-    while ariness > 0:
-        child = pop()  # Assuming there's a function pop() to retrieve child nodes
-        print(child.value,"is the child")
-        if node.child is not None:
-            child.sibling = node.child
-        node.child = child
-        node.sourceLineNumber = child.sourceLineNumber
-
-        ariness -= 1
-
-    push(node)  # Assuming there's a function push() to push the node onto some stack
-
-    return node
-
-def create_terminal_ast_node(type, value, sourceLineNumber):
-    node = ASTNode(type, value, sourceLineNumber)
-    push(node)
-    return node
-
-def is_current_token_type(type):
-    global currentToken
-    return currentToken.type == type
-
-def is_current_token(type, value):
-    global currentToken
-    print(currentToken.type,currentToken.value)
-    return (currentToken.type == type and currentToken.value == value)
-# this function is responsible for advancing through token stream
-def read_NT():
-
-    global currentToken, tokens, token_index
-    print(token_index)
-    if(token_index < len(tokens)):
-        currentToken = tokens[token_index]
-        token_index += 1
-        if currentToken.value is not None:
-            if currentToken.type == "IDENTIFIER":
-                node = create_terminal_ast_node(ASTNodeType.ASTNodeType_IDENTIFIER, currentToken.value, currentToken.sourceLineNumber)
-            elif currentToken.type == "INTEGER":
-                node = create_terminal_ast_node(ASTNodeType.ASTNodeType_INTEGER, currentToken.value, currentToken.sourceLineNumber)
-            elif currentToken.type == "STRING":
-                node = create_terminal_ast_node(ASTNodeType.ASTNodeType_STRING, currentToken.value, currentToken.sourceLineNumber)
-    else:
-        pass
+    # pre-order traversal of n araay tree
+    def print_tree(self):
+        print(self.data)
+        if self.children:
+            for child in self.children:
+                child.print_tree()
 
 
-def procE():
-    print("procE")
-    if (is_current_token("KEYWORD","let")):
-        #read the non-terminal function
-        read_NT()
-        procD()
-        if (is_current_token("KEYWORD","in") == False):
-            print("E: 'in' expected")
-            exit(0)
-        #read the non-terminal function
-        read_NT()
-        procE()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LET, 2)
+class ASTParsser:
 
-    elif (is_current_token("KEYWORD","fn")):
-        treesToPop = 0
-        read_NT()
-        # putting punctuation here is a problem
-        while (is_current_token_type("KEYWORD") and is_current_token_type("L_PAREN")):
-            procVB()
-            treesToPop += 1
-            if (treesToPop == 0):
-                print("E: atleast one 'Vb' expected" )
+    def __int__(self, tokens1):
+        self.tokens = tokens1
+        self.current_token = None
+        self.index = 0
 
-            if not (is_current_token("OPERATOR", ".")):
-                print("E: '.' expected ")
+    def read(self):
 
-            read_NT()
-            procE()
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_LAMBDA,treesToPop+1)
-    else:
-        procEW()
+        if self.current_token.type in [Tokenizer.TokenType.ID, Tokenizer.TokenType.INT,
+                                       Tokenizer.TokenType.STRING] :
 
-def procEW():
-    #T ’where’ DR
-    print("procEW")
-    procT()
-    if(is_current_token("KEYWORD","where")):
-        read_NT()
-        procDR()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_WHERE,2)
+            terminalNode = ASTNode( "<"+str(self.current_token.type.value)+":"+  str(self.current_token.value)+">")
+            stack.append(terminalNode)
+            # print stack
+            # print("stack content after reading")
+            # for node in stack:
+            #     print(node.data)
+        if self.current_token.value in  ['true', 'false', 'nil', 'dummy']:
+            stack.append(ASTNode(self.current_token.value))
 
-def procT():
-    print("procT")
-    procTA()
-    #extra readToken() in procTA()
-    treesToPop = 0
-    while (is_current_token("OPERATOR",",")):
-        read_NT()
-        procTA()
+        print("reading : " + str(self.current_token.value))
+        self.index += 1
 
-        treesToPop += treesToPop
-        if (treesToPop > 0):
+        if (self.index < len(self.tokens)):
+            self.current_token = self.tokens[self.index]
 
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_TAU,treesToPop+1)
+    def buildTree(self, token, ariness):
+        global stack
 
-def procTA():
-    print("procTA")
-    procTC()
-    while (is_current_token("KEYWORD", "aug")):
-        read_NT()
-        procTC()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AUG,2) 
+        print("stack content before ")
+        for node in stack:
+            print(node.type)
 
-# this can have bugs 
-#***********************************************************************
-def procTC():
-    print("ProcTC")
-    procB()
-    if(is_current_token("OPERATOR","->")):
-        read_NT()
-        procTC()
+        print("building tree")
 
-        if not (is_current_token("OPERATOR", "|")):
-            print("TC: '|' expected\n")
-        
-        read_NT()
-        procTC()
+        node = ASTNode(token)
+        node.value = None
+        node.sourceLineNumber = -1
+        node.child = None
+        node.sibling = None
 
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_CONDITIONAL, 3)
+        while ariness > 0:
+            # print("error in while loop")
+            child = stack[-1]
+            stack.pop()
+            # Assuming pop() is a function that returns an ASTNode
+            if node.child is not None:
+                child.sibling = node.child
+            node.child = child
+            node.sourceLineNumber = child.sourceLineNumber
+            ariness -= 1
 
-def procB():
-    print("procB")
-    procBT()
-    # extra read_NT in proc_BT()
-    while (is_current_token("KEYWORD", "or")):
-        read_NT()
-        procBT()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_OR, 2)
+        node.print_tree()
 
-def procBT():
-    print("procBT")
-    procBS()
-    # extra read_NT in proc_BS()
-    while is_current_token("OPERATOR", "&"):
-        read_NT()
-        procBS()
-        # extra read_NT in proc_BS()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AND, 2)
+        stack.append(node)  
+        print("stack content after")
+        for node in stack:
+            print(node.type)
 
-def procBP():
+    def procE(self):
+        print('procE')
+        match self.current_token.value:
 
-    global currentToken
-    print('I am at proc BP')
-    print(currentToken.value)
-    print("procBP")
-    procA()
-    # Bp -> A('gr' | '>' ) A => 'gr'
-    if ((is_current_token("KEYWORD", "gr") or is_current_token("OPERATOR", ">"))):
-        read_NT()
-        procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GR, 2)
+            case 'let':
+                self.read()
+                self.procD()
 
-    #Bp -> A ('ge' | '>=') A => 'ge'
-    elif ((is_current_token("KEYWORD", "ge") or is_current_token("OPERATOR", ">="))):
-        read_NT()
-        procA()
-        # extra readNT in procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GE, 2)
+                if self.current_token.value != 'in':
+                    print("Error: in is expected")
+                    return
 
-    elif ((is_current_token("KEYWORD", "ls")) or (is_current_token("OPERATOR", "<"))):
-        read_NT()
-        procA()
-        # extra readNT in procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LS, 2)
+                self.read()
+                self.procE()
+                print('E->let D in E')
+                self.buildTree("let", 2)
 
-    elif ((is_current_token("KEYWORD", "le")) or (is_current_token("OPERATOR", "<="))):
-        read_NT()
-        procA()
-        # extra readNT in procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_LE, 2)
+            case 'fn':
 
-    elif (is_current_token("KEYWORD", "eq")):
-        read_NT()
-        procA()
-        # extra readNT in procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQ, 2)
+                n = 0
 
-    elif (is_current_token("KEYWORD", "ne")):
-        read_NT()
-        procA()
-        # extra readNT in procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NE, 2)
+                self.read()
 
-def procBS():
-    print("procBS")
-    if (is_current_token("RESERVED", "not")):
-        read_NT()
-        procBP()
-        # extra readNT in procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NOT, 1)
-    else:
-        procBP()
+                while self.current_token.type == Tokenizer.TokenType.ID or self.current_token.value == '(':
+                    self.procVb()
+                    n += 1
 
+                if n == 0:
+                    print("E: at least one 'Vb' expected\n")
+                    return
 
-# this also looks problematic
-# *****************************************************************************
-def procAF():
-    print("procAF")
+                if self.current_token.value != '.':
+                    print("Error: . is expected")
+                    return
 
-    procAP()
+                self.read()
+                self.procE()
+                print('E->fn Vb . E')
+                self.buildTree("lambda", n+1)
 
-    while(is_current_token("OPERATOR", "**")):
-        read_NT()
-        procAF()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_EXP, 2)
+            case _:
+                self.procEw()
+                print('E->Ew')
 
-def procAT():
-    print("procAT")
-    procAF()
-    #At -> Af;
-    #extra readNT in procAF()
-    mult = True
-    while ((is_current_token("OPERATOR", "*")) or (is_current_token("OPERATOR", "/"))):
+    def procEw(self):
+        print('procEw')
+        self.procT()
+        print('Ew->T')
+        if self.current_token.value == 'where':
+            self.read()
+            self.procDr()
+            print('Ew->T where Dr')
+            self.buildTree("where", 2)
 
-        if (currentToken.value == "*"):
-            mult = True
-        elif(currentToken.value == "/"):
-            mult = False
-        read_NT()
-        procAF()
+    def procT(self):
+        print('procT')
+        self.procTa()
+        # print('T->Ta')
 
-        if(mult):
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_MULT, 2)
+        n = 0
+        while self.current_token.value == ',':
+            self.read()
+            self.procTa()
+            n += 1
+            print('T->Ta , Ta')
+        if n > 0:
+            self.buildTree("tau", n + 1)
         else:
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_DIV, 2)
+            print('T->Ta')
 
+    def procTa(self):
+        print('procTa')
+        self.procTc()
+        print('Ta->Tc')
+        while self.current_token.value == 'aug':
+            self.read()
+            self.procTc()
+            print('Ta->Tc aug Tc')
 
-# this looks problematic
-def procA():
-    print("procA")
+            self.buildTree("aug", 2)
 
-    if (is_current_token("OPERATOR", "+")):
-        read_NT()
-        procAT()
-        # extra readNT in procAT()
+    def procTc(self):
+        print('procTc')
 
-    elif (is_current_token("OPERATOR", "-")):
-        #A -> '-' At => 'neg'
-        read_NT()
-        procAT()
-        # extra readNT in procA()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_NEG, 1)
-    else:
-        procAT()
-    plus=True
-    print('while loop ekahh')
-    while (True):
+        self.procB()
+        print('Tc->B')
+        if self.current_token.type == Tokenizer.TokenType.TERNARY_OPERATOR:
+            self.read()
+            self.procTc()
 
-        print("athulata aawa")
+            if self.current_token.value != '|':
+                print("Error: | is expected")
+                return
+            self.read()
+            self.procTc()
+            print('Tc->B -> Tc | Tc')
+            self.buildTree("->", 3)
 
-        if (is_current_token("OPERATOR", "+") or is_current_token("OPERATOR", "-")):
-            break
-        if(currentToken.value == "+"):
-            plus = True
-        elif(currentToken.value == "-"):
-            plus = False
-        read_NT()
-        procAT()
+    def procB(self):
+        print('procB')
 
-        if(plus):
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_PLUS, 2)
+        self.procBt()
+        print('B->Bt')
+        while self.current_token.value == 'or':
+            self.read()
+            self.procBt()
+            print('B->B or B')
+            self.buildTree("or", 2)
+
+    def procBt(self):
+        print('procBt')
+
+        self.procBs()
+        print('Bt->Bs')
+        while self.current_token.value == '&':
+            self.read()
+            self.procBs()
+            print('Bt->Bs & Bs')
+            self.buildTree("&", 2)
+
+    def procBs(self):
+        print('procBs')
+
+        if self.current_token.value == 'not':
+            self.read()
+            self.procBp()
+            print('Bs->not Bp')
+            self.buildTree("not", 1)
         else:
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_MINUS, 2)
+            self.procBp()
+            print('Bs->Bp')
 
-def procAP():
-    print("procAP")
-    procR()
-    while (is_current_token("OPERATOR", "@")):
-        read_NT()
-        if(not is_current_token("IDENTIFIER")):
-           print("AP: expected Identifier")
-        read_NT()
+    def procBp(self):
+        print('procBp')
 
-        procR()
+        self.procA()
+        print('Bp->A')
+        print(self.current_token.value+"######")
 
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_AT, 3)
+        ##  Bp -> A ( 'gr' | '>') A
+        match self.current_token.value:
+            case '>':
+                self.read()
+                self.procA()
+                print('Bp->A gr A')
+                self.buildTree("gr", 2)
+            case 'gr':
+                self.read()
+                self.procA()
+                print('Bp->A gr A')
+                self.buildTree("gr", 2)
 
+            case 'ge':
+                self.read()
+                self.procA()
+                print('Bp->A ge A')
+                self.buildTree("ge", 2)
 
-# ***********************************************************************
-def procRN():
-    print("procRN")
-
-    
-    if (is_current_token("KEYWORD", "True")):
-        create_terminal_ast_node(ASTNodeType.ASTNodeType_TRUE,"true",currentToken.sourceLineNumber)
-        read_NT()
-
-    elif (is_current_token("KEYWORD", "False")):
-        create_terminal_ast_node(ASTNodeType.ASTNodeType_FALSE,"false",currentToken.sourceLineNumber)
-        read_NT()
-
-    elif (is_current_token("KEYWORD", "nil")):
-        create_terminal_ast_node(ASTNodeType.ASTNodeType_NIL,"nil",currentToken.sourceLineNumber)
-        read_NT()
-
-    elif (is_current_token_type("L_PAREN")):
-        read_NT()
-        procE()
-
-        if not (is_current_token_type("R_PAREN")):
-           #Replace with appropriate error handling
-           print("RN: ')' expected")
-
-    elif (is_current_token_type("KEYWORD" "dummy")):
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_DUMMY, "dummy", currentToken.sourceLineNumber)
-        read_NT()
-    pass
+            case '>=':
+                self.read()
+                self.procA()
+                print('Bp->A ge A')
+                self.buildTree("ge", 2)
 
 
-# there is an error here
-# ***************************************************************************************************
-def procR():
-    print("procR")
-    procRN()
-    while ((is_current_token_type("IDENTIFIER") or is_current_token_type("INTEGER") or 
-            is_current_token_type("STRING") or 
-            is_current_token("KEYWORD", "True") or 
-            is_current_token("KEYWORD", "False") or 
-            is_current_token("KEYWORD", "nil") or 
-            is_current_token("KEYWORD", "dummy") or 
-            is_current_token_type("L_PAREN"))):
-        procRN()
-        
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_GAMMA, 2)
 
-        read_NT()
+            case '<':
+                self.read()
+                self.procA()
+                print('Bp->A ls A')
+                self.buildTree("ls", 2)
 
-def procDR():
-    print("procDR")
-    
-    if (is_current_token("KEYWORD", "rec")):
-        read_NT()
-        procDB()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_REC, 1)
+            case 'ls':
+                self.read()
+                self.procA()
+                print('Bp->A ls A')
+                self.buildTree("ls", 2)
 
-    else:
-        procDB()
+            case '<=':
+                self.read()
+                self.procA()
+                print('Bp->A le A')
+                self.buildTree("le", 2)
 
-def procDA():
-    print("procDA")
-    procDR()
+            case 'le':
+                self.read()
+                self.procA()
+                print('Bp->A le A')
+                self.buildTree("le", 2)
 
-    treesToPop = 0
-    
-    while (is_current_token("KEYWORD", "and")):
-        read_NT()
-        procDA()
-        #pop thing
-    
-    if (treesToPop > 0):
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_SIMULTDEF, treesToPop + 1)
+            case 'eq':
+                self.read()
+                self.procA()
+                print('Bp->A eq A')
+                self.buildTree("eq", 2)
 
-def procD():
-    print("procD")
-    procDA()
-    if (is_current_token("KEYWORD", "within")):
-        read_NT()
-        procD()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_WITHIN, 2)
+            case 'ne':
+                self.read()
+                self.procA()
+                print('Bp->A ne A')
+                self.buildTree("ne", 2)
 
-# ***********************************************************************
-def procDB():
-    print("procDB")
-    
-    if (is_current_token_type("L_PAREN")):
-        read_NT()
-        procD()
-        if(not is_current_token_type("R_PAREN")):
-            print("Error: ) is expected")
+            case _:
+                return
+
+    def procA(self):
+        print('procA')
+
+        if self.current_token.value == '+':
+            self.read()
+            self.procAt()
+            print('A->+ At')
+            # self.buildTree("+", 1)
+
+        elif self.current_token.value == '-':
+            self.read()
+            self.procAt()
+            print('A->- At')
+            self.buildTree("neg", 1)
+
+
+        else:
+            self.procAt()
+            print('A->At')
+        plus = '+'
+        while self.current_token.value == '+' or self.current_token.value == '-':
+
+            if self.current_token.value=='-':
+                plus='-'
+
+            self.read()
+            self.procAt()
+            print('A->A + / -At')
+            print(self.current_token.value)
+            self.buildTree(plus, 2)
+
+
+    def procAt(self):
+        print('procAt')
+
+        self.procAf()
+        print('At->Af')
+        while self.current_token.value == '*' or self.current_token.value == '/':
+            self.read()
+            self.procAf()
+            print('At->Af * Af')
+            print("current token value " + self.current_token.value)
+            self.buildTree(self.current_token.value, 2)
+
+    def procAf(self):
+        print('procAf')
+
+        self.procAp()
+        print('Af->Ap')
+        while self.current_token.value == '**':
+            self.read()
+            self.procAf()
+            print('Af->Ap ** Af')
+            self.buildTree("**", 2)
+
+    def procAp(self):
+        print('procAp')
+
+        self.procR()
+        print('Ap->R')
+        while self.current_token.value == '@':
+            self.read()
+            self.procR()
+            print('Ap->R @ R')
+            self.buildTree("@", 2)
+
+    def procR(self):
+        print('procR')
+
+        self.procRn()
+        print('R->Rn')
+        # self.read()
+
+        while (self.current_token.type in [Tokenizer.TokenType.ID, Tokenizer.TokenType.INT,
+                                           Tokenizer.TokenType.STRING] or self.current_token.value in ['true', 'false',
+                                                                                                        'nil', 'dummy',
+                                                                                                        "("]):
+            self.procRn()
+            print('R->R Rn')
+            self.buildTree("gamma", 2)
+
+            # self.read()
+
+    def procRn(self):
+        print("procRn")
+
+        if self.current_token.type in [Tokenizer.TokenType.ID, Tokenizer.TokenType.INT,
+                                       Tokenizer.TokenType.STRING]:
+
+            print('Rn->' + str(self.current_token.value))
+
+            self.read()
+
+            # self.read()
+            # self.buildTree("id", 0)
+        elif self.current_token.value in ['true', 'false', 'nil', 'dummy']:
+            print('Rn->' + self.current_token.value)
+            self.read()
+            print("self.current_token.value" , self.current_token.value)
+            # self.buildTree(self.current_token.value, 0)
+        elif self.current_token.value == '(':
+            self.read()
+            self.procE()
+            if self.current_token.value != ')':
+                print("Error: ) is expected")
+                return
+            self.read()
+            print('Rn->( E )')
+            # self.buildTree("()", 1)
+
+    def procD(self):
+        print('procD')
+
+        self.procDa()
+        print('D->Da')
+        while self.current_token.value == 'within':
+            self.read()
+            self.procD()
+            print('D->Da within D')
+            self.buildTree("within", 2)
+
+    def procDa(self):
+        print('procDa')
+
+        self.procDr()
+        print('Da->Dr')
+        n = 0
+        while self.current_token.value == 'and':
+            n += 1
+            self.read()
+            self.procDa()
+            print('Da->and Dr')
+        # if n == 0:
+        #     print("Error")
+        #     return
+        if n > 0:
+            self.buildTree("and", n + 1)
+
+    def procDr(self):
+        print('procDr')
+
+        if self.current_token.value == 'rec':
+            self.read()
+            self.procDb()
+            print('Dr->rec Db')
+            self.buildTree("rec", 1)
+
+        self.procDb()
+        print('Dr->Db')
+
+    def procDb(self):
+        print('procDb')
+
+        if self.current_token.value == '(':
+            self.read()
+            self.procD()
+            if self.current_token.value != ')':
+                print("Error: ) is expected")
+                return
+            self.read()
+            print('Db->( D )')
+            self.buildTree("()", 1)
+
+        elif self.current_token.type == Tokernizer.TokenType.ID:
+            self.read()
+
+            if self.current_token.type == Tokernizer.TokenType.COMMA:
+                # Db -> Vl '=' E => '='
+                self.read()
+                self.procVb()
+
+                if self.current_token.value != '=':
+                    print("Error: = is expected")
+                    return
+                self.buildTree(",", 2)
+                self.read()
+                self.procE()
+                self.buildTree("=", 2)
+            else :
+                if self.current_token.value == '=':
+                    self.read()
+                    self.procE()
+                    print('Db->id = E')
+                    self.buildTree("=", 2)
+
+                else :
+
+                    n = 0
+                    while self.current_token.type == Tokernizer.TokenType.ID or self.current_token.value == '(':
+                        self.procVb()
+                        n += 1
+
+                    if n == 0:
+                        print("Error: ID or ( is expected")
+                        return
+
+                    if self.current_token.value != '=':
+                        print("Error: = is expected")
+                        return
+                    self.read()
+                    self.procE()
+                    print('Db->identifier Vb+ = E')
+                    self.buildTree("function_form", n + 2)
+
+        # else:
+        #     self.procVL()
+        #     print(self.current_token.value)
+        #     if self.current_token.value != '=':
+        #         print("Error: = is expected")
+        #         return
+        #     self.read()
+        #     self.procE()
+        #     print('Db->Vl = E')
+        #     self.buildTree("=", 2)
+
+    def procVb(self):
+        print('procVb')
+        if self.current_token.type == Tokernizer.TokenType.ID:
+            self.read()
+            print('Vb->id')
+            # self.buildTree("id", 1)
+
+        elif self.current_token.value == '(':
+            self.read()
+            # print(self.current_token.value)
+            if self.current_token.type == ')':
+                print('Vb->( )')
+                self.buildTree("()", 0)
+                self.read()
+            else:
+                self.procVL()
+                print('Vb->( Vl )')
+                if self.current_token.value != ')':
+                    print("Error: ) is expected")
+                    return
+            self.read()
+
+            # self.buildTree("()", 1)
+
+        else:
+            print("Error: ID or ( is expected")
             return
 
-        read_NT()
-        build_n_ary_ast_node(ASTNodeType.ASTNodeType_PAREN,1)
-    elif (is_current_token_type("IDENTIFIER")):
+    def procVL(self):
+        print("procVL")
+        print("559 "+str(self.current_token.value))
 
-        read_NT()
-        if (is_current_token("OPERATOR", ",")):
-            read_NT()
-            procVB()
-
-            if not (is_current_token("OPERATOR","=")):
-                print("Error: = expected.")
-                return
-            
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA,2)
-            read_NT()
-            procE()
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQUAL,2)
-
+        if self.current_token.type != Tokernizer.TokenType.ID:
+            print("562 VL: Identifier expected")  # Replace with appropriate error handling
         else:
-            if(is_current_token("OPERATOR", "=")):
+            print('VL->' + self.current_token.value)
 
-                read_NT()
-                procE()
-                build_n_ary_ast_node(ASTNodeType.ASTNodeType_EQUAL,2)
-            
-            else:
-                treesToPop = 0
+            self.read()
+            trees_to_pop = 0
+            while self.current_token.value == ',':
+                # Vl -> '<IDENTIFIER>' list ',' => ','?;
+                self.read()
+                if self.current_token.type != Tokernizer.TokenType.ID:
+                    print(" 572 VL: Identifier expected")  # Replace with appropriate error handling
+                self.read()
+                print('VL->id , ?')
 
-                while(is_current_token_type("IDENTIFIER") or is_current_token_type("L_PAREN")):
-                    procVB()
-                    treesToPop += 1
+                trees_to_pop += 1
+            print('498')
+            if trees_to_pop > 0:
+                self.buildTree(',', trees_to_pop +1)  # +1 for the first identifier
 
-                if(treesToPop == 0):
-                    print("E: at least one 'Vb' expected")
-                    return
-                
-                read_NT()
-                procE()
 
-                build_n_ary_ast_node(ASTNodeType.ASTNodeType_FCNFORM,treesToPop+2)
 
-# this also can be problematic
-# *********************************************************************
-def procVB():
-    global currentToken
-    print("procVB")
-    
-    if (is_current_token_type("IDENTIFIER")):
-        #Vb -> '<IDENTIFIER>'
-        read_NT()
 
-    elif (is_current_token_type("L_PAREN")):
-        read_NT()
-        if (is_current_token_type("R_PAREN")):
-        #Vb -> '(' ')' => '()'
-            create_terminal_ast_node(ASTNodeType.ASTNodeType_PAREN, "", currentToken.sourceLineNumber)
-            read_NT()
 
-        else:
-            procVL()
-            if (not is_current_token_type("R_PAREN")):
-                print("VB: ')' expected")
-                return
-        read_NT()
-    else:
-        print("Error: IF or ( is expected)")
-        return
+import sys
+input_path=sys.argv[1]
+with open(input_path) as file:
+    program = file.read();
+    # print(program)
 
-# ********************************************************************
-def procVL():
-    print("procVL")
+stack = []
+tokens = []
+# tokenize input
+tokenizer = Tokernizer.Tokenizer(program)
+token = tokenizer.get_next_token()
+print(token.type, token.value)
+while token.type != Tokernizer.TokenType.EOF:
+    print(token.type, token.value)
+    if token.value in Tokernizer.RESERVED_KEYWORDS:
+        token.type = Tokernizer.TokenType.RESERVED_KEYWORD
 
-    if not  (is_current_token_type("IDENTIFIER")):
-        print("VL: Identifier expected")
+    tokens.append(token)
+    token = tokenizer.get_next_token()
 
-    else:
-        read_NT()
-        treesToPop=0
-        while (is_current_token("OPERATOR", ",")):
-            read_NT()
-            if not  (is_current_token_type("IDENTIFIER")):
-                print("VL: Identifier expected")
-                read_NT()
-                treesToPop += 1
-            
-        if (treesToPop>0):
-            build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA, treesToPop + 1)
+screener = Screener(tokens)
+tokens = screener.screen()
+# parse input
+print(" after screening ")
+# for token in tokens:
+#     # print(token.type, token.value)
+parser = ASTParsser()
+parser.tokens = tokens
+parser.current_token = tokens[0]
+parser.index = 0
 
-def startParse():
-
-    read_NT()
-    procE()
-
-    if(currentToken.value != None):
-        print(currentToken.value)
-
-def buildAST():
-
-    startParse()
-
-    return pop()
-
-root = buildAST()
-
-print_ast(root,0)
-
-print(root)
-print('hello world')
+parser.procE()
+print(len(stack))
+root = stack[0]
+root.print_tree()
+with open(input_path+"_output", "w") as file:
+    root.indentation = 0
+    root.print_tree_to_file(file)
