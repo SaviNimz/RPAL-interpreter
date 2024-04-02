@@ -1,9 +1,8 @@
 import Tokenizer
 from Tokenizer import Screener
 
-
+#Defining a class for ASTNode
 class ASTNode:
-
     def __init__(self, type):
         self.type = type
         self.value = None
@@ -11,7 +10,7 @@ class ASTNode:
         self.child = None
         self.sibling = None
         self.indentation = 0
-
+    #Print tree
     def print_tree(self):
         print(self.type)
 
@@ -23,6 +22,7 @@ class ASTNode:
 
             self.sibling.print_tree()
 
+    #Print tree to file
     def print_tree_to_file(self, file):
 
         for i in range(self.indentation):
@@ -38,7 +38,7 @@ class ASTNode:
             self.sibling.indentation = self.indentation
             self.sibling.print_tree_to_file(file)
 
-
+#Defining a class for Tree Node
 class TreeNode:
     def __init__(self, data):
         self.data = data
@@ -55,8 +55,8 @@ class TreeNode:
             for child in self.children:
                 child.print_tree()
 
-
-class ASTParsser:
+#Defining a class for AST Parser
+class ASTParser:
 
     def __int__(self, tokens1):
         self.tokens = tokens1
@@ -113,6 +113,7 @@ class ASTParsser:
         for node in stack:
             print(node.type)
 
+#Defining process E
     def procE(self):
         print('procE')
         match self.current_token.value:
@@ -131,9 +132,7 @@ class ASTParsser:
                 self.buildTree("let", 2)
 
             case 'fn':
-
                 n = 0
-
                 self.read()
 
                 while self.current_token.type == Tokenizer.TokenType.ID or self.current_token.value == '(':
@@ -157,6 +156,7 @@ class ASTParsser:
                 self.procEw()
                 print('E->Ew')
 
+#Defining process Ew
     def procEw(self):
         print('procEw')
         self.procT()
@@ -167,6 +167,7 @@ class ASTParsser:
             print('Ew->T where Dr')
             self.buildTree("where", 2)
 
+#Defining process T  
     def procT(self):
         print('procT')
         self.procTa()
@@ -183,6 +184,7 @@ class ASTParsser:
         else:
             print('T->Ta')
 
+#Defining process Ta
     def procTa(self):
         print('procTa')
         self.procTc()
@@ -194,6 +196,7 @@ class ASTParsser:
 
             self.buildTree("aug", 2)
 
+#Defining process Tc
     def procTc(self):
         print('procTc')
 
@@ -211,6 +214,7 @@ class ASTParsser:
             print('Tc->B -> Tc | Tc')
             self.buildTree("->", 3)
 
+#Defining process B
     def procB(self):
         print('procB')
 
@@ -222,6 +226,7 @@ class ASTParsser:
             print('B->B or B')
             self.buildTree("or", 2)
 
+#Defining process Bt
     def procBt(self):
         print('procBt')
 
@@ -233,6 +238,7 @@ class ASTParsser:
             print('Bt->Bs & Bs')
             self.buildTree("&", 2)
 
+#Defining process Bs
     def procBs(self):
         print('procBs')
 
@@ -245,6 +251,7 @@ class ASTParsser:
             self.procBp()
             print('Bs->Bp')
 
+#Defining process Bp
     def procBp(self):
         print('procBp')
 
@@ -253,6 +260,7 @@ class ASTParsser:
         print(self.current_token.value+"######")
 
         ##  Bp -> A ( 'gr' | '>') A
+        # Switch cases implementation
         match self.current_token.value:
             case '>':
                 self.read()
@@ -276,8 +284,6 @@ class ASTParsser:
                 self.procA()
                 print('Bp->A ge A')
                 self.buildTree("ge", 2)
-
-
 
             case '<':
                 self.read()
@@ -318,6 +324,7 @@ class ASTParsser:
             case _:
                 return
 
+#Defining process A
     def procA(self):
         print('procA')
 
@@ -349,7 +356,7 @@ class ASTParsser:
             print(self.current_token.value)
             self.buildTree(plus, 2)
 
-
+#Defining process At
     def procAt(self):
         print('procAt')
 
@@ -362,6 +369,7 @@ class ASTParsser:
             print("current token value " + self.current_token.value)
             self.buildTree(self.current_token.value, 2)
 
+#Defining process Af
     def procAf(self):
         print('procAf')
 
@@ -373,6 +381,7 @@ class ASTParsser:
             print('Af->Ap ** Af')
             self.buildTree("**", 2)
 
+#Defining process Ap
     def procAp(self):
         print('procAp')
 
@@ -384,6 +393,7 @@ class ASTParsser:
             print('Ap->R @ R')
             self.buildTree("@", 2)
 
+#Defining process R
     def procR(self):
         print('procR')
 
@@ -401,6 +411,7 @@ class ASTParsser:
 
             # self.read()
 
+#Defining process Rn
     def procRn(self):
         print("procRn")
 
@@ -426,6 +437,7 @@ class ASTParsser:
             print('Rn->( E )')
             # self.buildTree("()", 1)
 
+#Defining process D
     def procD(self):
         print('procD')
 
@@ -437,6 +449,7 @@ class ASTParsser:
             print('D->Da within D')
             self.buildTree("within", 2)
 
+#Defining process Da
     def procDa(self):
         print('procDa')
 
@@ -454,6 +467,7 @@ class ASTParsser:
         if n > 0:
             self.buildTree("and", n + 1)
 
+#Defining process Dr
     def procDr(self):
         print('procDr')
 
@@ -466,6 +480,7 @@ class ASTParsser:
         self.procDb()
         print('Dr->Db')
 
+#Defining process Db
     def procDb(self):
         print('procDb')
 
@@ -520,8 +535,7 @@ class ASTParsser:
                     print('Db->identifier Vb+ = E')
                     self.buildTree("function_form", n + 2)
 
-
-
+#Defining process Vb
     def procVb(self):
         print('procVb')
         if self.current_token.type == Tokenizer.TokenType.ID:
@@ -550,12 +564,14 @@ class ASTParsser:
             print("Error: ID or ( is expected")
             return
 
+#Defining process Vl
     def procVL(self):
         print("procVL")
         print("559 "+str(self.current_token.value))
 
         if self.current_token.type != Tokenizer.TokenType.ID:
-            print("562 VL: Identifier expected")  # Replace with appropriate error handling
+            # Should Handle Errors
+            print("562 VL: Identifier expected")  
         else:
             print('VL->' + self.current_token.value)
 
@@ -565,7 +581,8 @@ class ASTParsser:
                 # Vl -> '<IDENTIFIER>' list ',' => ','?;
                 self.read()
                 if self.current_token.type != Tokenizer.TokenType.ID:
-                    print(" 572 VL: Identifier expected")  # Replace with appropriate error handling
+                    # Should Handle Errors
+                    print(" 572 VL: Identifier expected") 
                 self.read()
                 print('VL->id , ?')
 
@@ -599,7 +616,7 @@ tokens = screener.screen()
 
 print(" after screening ")
 
-parser = ASTParsser()
+parser = ASTParser()
 parser.tokens = tokens
 parser.current_token = tokens[0]
 parser.index = 0
