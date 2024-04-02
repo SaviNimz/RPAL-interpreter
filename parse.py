@@ -1,9 +1,8 @@
 import Tokenizer
 from Tokenizer import Screener
 
-
+#Defining a class for ASTNode
 class ASTNode:
-
     def __init__(self, type):
         self.type = type
         self.value = None
@@ -11,7 +10,7 @@ class ASTNode:
         self.child = None
         self.sibling = None
         self.indentation = 0
-
+    #Print tree
     def print_tree(self):
         print(self.type)
 
@@ -23,6 +22,7 @@ class ASTNode:
 
             self.sibling.print_tree()
 
+    #Print tree to file
     def print_tree_to_file(self, file):
 
         for i in range(self.indentation):
@@ -38,7 +38,7 @@ class ASTNode:
             self.sibling.indentation = self.indentation
             self.sibling.print_tree_to_file(file)
 
-
+#Defining a class for Tree Node
 class TreeNode:
     def __init__(self, data):
         self.data = data
@@ -55,8 +55,8 @@ class TreeNode:
             for child in self.children:
                 child.print_tree()
 
-
-class ASTParsser:
+#Defining a class for AST Parser
+class ASTParser:
 
     def __int__(self, tokens1):
         self.tokens = tokens1
@@ -134,9 +134,7 @@ class ASTParsser:
                 self.buildTree("let", 2)
 
             case 'fn':
-
                 n = 0
-
                 self.read()
 
                 while self.current_token.type == Tokenizer.TokenType.ID or self.current_token.value == '(':
@@ -256,6 +254,7 @@ class ASTParsser:
         print(self.current_token.value+"######")
 
         ##  Bp -> A ( 'gr' | '>') A
+        # Switch cases implementation
         match self.current_token.value:
             case '>':
                 self.read()
@@ -279,8 +278,6 @@ class ASTParsser:
                 self.procA()
                 print('Bp->A ge A')
                 self.buildTree("ge", 2)
-
-
 
             case '<':
                 self.read()
@@ -560,7 +557,8 @@ class ASTParsser:
         print("559 "+str(self.current_token.value))
 
         if self.current_token.type != Tokenizer.TokenType.ID:
-            print("562 VL: Identifier expected")  # Replace with appropriate error handling
+            # Should Handle Errors
+            print("562 VL: Identifier expected")  
         else:
             print('VL->' + self.current_token.value)
 
@@ -570,7 +568,8 @@ class ASTParsser:
                 # Vl -> '<IDENTIFIER>' list ',' => ','?;
                 self.read()
                 if self.current_token.type != Tokenizer.TokenType.ID:
-                    print(" 572 VL: Identifier expected")  # Replace with appropriate error handling
+                    # Should Handle Errors
+                    print(" 572 VL: Identifier expected") 
                 self.read()
                 print('VL->id , ?')
 
@@ -604,7 +603,7 @@ tokens = screener.screen()
 
 print(" after screening ")
 
-parser = ASTParsser()
+parser = ASTParser()
 parser.tokens = tokens
 parser.current_token = tokens[0]
 parser.index = 0
