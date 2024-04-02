@@ -70,10 +70,7 @@ class ASTParsser:
 
             terminalNode = ASTNode( "<"+str(self.current_token.type.value)+":"+  str(self.current_token.value)+">")
             stack.append(terminalNode)
-            # print stack
-            # print("stack content after reading")
-            # for node in stack:
-            #     print(node.data)
+
         if self.current_token.value in  ['true', 'false', 'nil', 'dummy']:
             stack.append(ASTNode(self.current_token.value))
 
@@ -414,13 +411,11 @@ class ASTParsser:
 
             self.read()
 
-            # self.read()
-            # self.buildTree("id", 0)
         elif self.current_token.value in ['true', 'false', 'nil', 'dummy']:
             print('Rn->' + self.current_token.value)
             self.read()
             print("self.current_token.value" , self.current_token.value)
-            # self.buildTree(self.current_token.value, 0)
+
         elif self.current_token.value == '(':
             self.read()
             self.procE()
