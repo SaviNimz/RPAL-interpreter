@@ -250,6 +250,8 @@ def procTA():
         procTC()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_AUG,2) 
 
+# this can have bugs 
+#***********************************************************************
 def procTC():
     print("ProcTC")
     procB()
@@ -422,11 +424,11 @@ def procAP():
 
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_AT, 3)
 
+
+# ***********************************************************************
 def procRN():
     print("procRN")
-    #if (is_current_token("IDENTIFIER") or is_current_token("INTEGER") or is_current_token("STRING")):
-    #R -> '<IDENTIFIER>', R -> '<INTEGER>', R-> '<STRING>'
-    #No need to do anything, as these are already processed in procR()
+
     
     if (is_current_token("KEYWORD", "True")):
         create_terminal_ast_node(ASTNodeType.ASTNodeType_TRUE,"true",currentToken.sourceLineNumber)
@@ -458,6 +460,7 @@ def procRN():
 # ***************************************************************************************************
 def procR():
     print("procR")
+    procRN()
     while ((is_current_token_type("IDENTIFIER") or is_current_token_type("INTEGER") or 
             is_current_token_type("STRING") or 
             is_current_token("KEYWORD", "True") or 
@@ -490,7 +493,7 @@ def procDA():
     
     while (is_current_token("KEYWORD", "and")):
         read_NT()
-        procDR()
+        procDA()
         #pop thing
     
     if (treesToPop > 0):
@@ -504,19 +507,19 @@ def procD():
         procD()
         build_n_ary_ast_node(ASTNodeType.ASTNodeType_WITHIN, 2)
 
+# ***********************************************************************
 def procDB():
     print("procDB")
     
     if (is_current_token_type("L_PAREN")):
         read_NT()
         procD()
-        read_NT()
-
         if(not is_current_token_type("R_PAREN")):
-           print("Error handling")
-        
+            print("Error: ) is expected")
+            return
+
         read_NT()
-    
+        build_n_ary_ast_node(ASTNodeType.ASTNodeType_PAREN,1)
     elif (is_current_token_type("IDENTIFIER")):
 
         read_NT()
@@ -525,7 +528,8 @@ def procDB():
             procVB()
 
             if not (is_current_token("OPERATOR","=")):
-                print("DB: = expected.")
+                print("Error: = expected.")
+                return
             
             build_n_ary_ast_node(ASTNodeType.ASTNodeType_COMMA,2)
             read_NT()
@@ -548,13 +552,17 @@ def procDB():
 
                 if(treesToPop == 0):
                     print("E: at least one 'Vb' expected")
+                    return
                 
                 read_NT()
                 procE()
 
                 build_n_ary_ast_node(ASTNodeType.ASTNodeType_FCNFORM,treesToPop+2)
 
+# this also can be problematic
+# *********************************************************************
 def procVB():
+    global currentToken
     print("procVB")
     
     if (is_current_token_type("IDENTIFIER")):
@@ -568,11 +576,15 @@ def procVB():
             create_terminal_ast_node(ASTNodeType.ASTNodeType_PAREN, "", currentToken.sourceLineNumber)
             read_NT()
 
+        else:
+            procVL()
+            if (not is_current_token_type("R_PAREN")):
+                print("VB: ')' expected")
+                return
+        read_NT()
     else:
-        procVL()
-        if (not is_current_token_type("R_PAREN")):
-            print("VB: ')' expected")
-            read_NT()
+        print("Error: IF or ( is expected)")
+        return
 
 def procVL():
     print("procVL")
