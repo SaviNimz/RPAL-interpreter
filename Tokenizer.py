@@ -315,7 +315,6 @@ class Screener:
 
 with open("tests/test_1.txt") as file:
     program = file.read()
-    # print(program)
 
 # tokenize input
 tokenizer = Tokenizer(program)

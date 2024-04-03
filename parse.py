@@ -96,10 +96,8 @@ class ASTParser:
         node.sibling = None
 
         while ariness > 0:
-            # print("error in while loop")
             child = stack[-1]
             stack.pop()
-            # Assuming pop() is a function that returns an ASTNode
             if node.child is not None:
                 child.sibling = node.child
             node.child = child
@@ -113,21 +111,21 @@ class ASTParser:
         for node in stack:
             print(node.type)
 
-#Defining process E
-    def procE(self):
+    #Defining process E
+    def processE(self):
         print('procE')
         match self.current_token.value:
 
             case 'let':
                 self.read()
-                self.procD()
+                self.processD()
 
                 if self.current_token.value != 'in':
                     print("Error: in is expected")
                     return
 
                 self.read()
-                self.procE()
+                self.processE()
                 print('E->let D in E')
                 self.buildTree("let", 2)
 
@@ -136,7 +134,7 @@ class ASTParser:
                 self.read()
 
                 while self.current_token.type == Tokenizer.TokenType.ID or self.current_token.value == '(':
-                    self.procVb()
+                    self.processVb()
                     n += 1
 
                 if n == 0:
@@ -148,35 +146,33 @@ class ASTParser:
                     return
 
                 self.read()
-                self.procE()
+                self.processE()
                 print('E->fn Vb . E')
                 self.buildTree("lambda", n+1)
 
             case _:
-                self.procEw()
+                self.processEw()
                 print('E->Ew')
 
-#Defining process Ew
-    def procEw(self):
+    #Defining process Ew
+    def processEw(self):
         print('procEw')
-        self.procT()
+        self.processT()
         print('Ew->T')
         if self.current_token.value == 'where':
             self.read()
-            self.procDr()
+            self.processDr()
             print('Ew->T where Dr')
             self.buildTree("where", 2)
 
-#Defining process T  
-    def procT(self):
+    #Defining process T  
+    def processT(self):
         print('procT')
-        self.procTa()
-        # print('T->Ta')
-
+        self.processTa()
         n = 0
         while self.current_token.value == ',':
             self.read()
-            self.procTa()
+            self.processTa()
             n += 1
             print('T->Ta , Ta')
         if n > 0:
@@ -184,165 +180,162 @@ class ASTParser:
         else:
             print('T->Ta')
 
-#Defining process Ta
-    def procTa(self):
+    #Defining process Ta
+    def processTa(self):
         print('procTa')
-        self.procTc()
+        self.processTc()
         print('Ta->Tc')
         while self.current_token.value == 'aug':
             self.read()
-            self.procTc()
+            self.processTc()
             print('Ta->Tc aug Tc')
 
             self.buildTree("aug", 2)
 
-#Defining process Tc
-    def procTc(self):
+    #Defining process Tc
+    def processTc(self):
         print('procTc')
 
-        self.procB()
+        self.processB()
         print('Tc->B')
         if self.current_token.type == Tokenizer.TokenType.TERNARY_OPERATOR:
             self.read()
-            self.procTc()
+            self.processTc()
 
             if self.current_token.value != '|':
                 print("Error: | is expected")
                 return
             self.read()
-            self.procTc()
+            self.processTc()
             print('Tc->B -> Tc | Tc')
             self.buildTree("->", 3)
 
-#Defining process B
-    def procB(self):
+    #Defining process B
+    def processB(self):
         print('procB')
 
-        self.procBt()
+        self.processBt()
         print('B->Bt')
         while self.current_token.value == 'or':
             self.read()
-            self.procBt()
+            self.processBt()
             print('B->B or B')
             self.buildTree("or", 2)
 
-#Defining process Bt
-    def procBt(self):
+    #Defining process Bt
+    def processBt(self):
         print('procBt')
 
-        self.procBs()
+        self.processBs()
         print('Bt->Bs')
         while self.current_token.value == '&':
             self.read()
-            self.procBs()
+            self.processBs()
             print('Bt->Bs & Bs')
             self.buildTree("&", 2)
 
-#Defining process Bs
-    def procBs(self):
+    #Defining process Bs
+    def processBs(self):
         print('procBs')
 
         if self.current_token.value == 'not':
             self.read()
-            self.procBp()
+            self.processBp()
             print('Bs->not Bp')
             self.buildTree("not", 1)
         else:
-            self.procBp()
+            self.processBp()
             print('Bs->Bp')
 
-#Defining process Bp
-    def procBp(self):
+    #Defining process Bp
+    def processBp(self):
         print('procBp')
 
-        self.procA()
+        self.processA()
         print('Bp->A')
         print(self.current_token.value+"######")
 
-        ##  Bp -> A ( 'gr' | '>') A
-        # Switch cases implementation
         match self.current_token.value:
             case '>':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A gr A')
                 self.buildTree("gr", 2)
             case 'gr':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A gr A')
                 self.buildTree("gr", 2)
 
             case 'ge':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A ge A')
                 self.buildTree("ge", 2)
 
             case '>=':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A ge A')
                 self.buildTree("ge", 2)
 
             case '<':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A ls A')
                 self.buildTree("ls", 2)
 
             case 'ls':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A ls A')
                 self.buildTree("ls", 2)
 
             case '<=':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A le A')
                 self.buildTree("le", 2)
 
             case 'le':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A le A')
                 self.buildTree("le", 2)
 
             case 'eq':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A eq A')
                 self.buildTree("eq", 2)
 
             case 'ne':
                 self.read()
-                self.procA()
+                self.processA()
                 print('Bp->A ne A')
                 self.buildTree("ne", 2)
 
             case _:
                 return
 
-#Defining process A
-    def procA(self):
+    #Defining process A
+    def processA(self):
         print('procA')
 
         if self.current_token.value == '+':
             self.read()
-            self.procAt()
+            self.processAt()
             print('A->+ At')
-            # self.buildTree("+", 1)
 
         elif self.current_token.value == '-':
             self.read()
-            self.procAt()
+            self.processAt()
             print('A->- At')
             self.buildTree("neg", 1)
 
 
         else:
-            self.procAt()
+            self.processAt()
             print('A->At')
         plus = '+'
         while self.current_token.value == '+' or self.current_token.value == '-':
@@ -351,53 +344,53 @@ class ASTParser:
                 plus='-'
 
             self.read()
-            self.procAt()
+            self.processAt()
             print('A->A + / -At')
             print(self.current_token.value)
             self.buildTree(plus, 2)
 
-#Defining process At
-    def procAt(self):
+    #Defining process At
+    def processAt(self):
         print('procAt')
 
-        self.procAf()
+        self.processAf()
         print('At->Af')
         while self.current_token.value == '*' or self.current_token.value == '/':
             self.read()
-            self.procAf()
+            self.processAf()
             print('At->Af * Af')
             print("current token value " + self.current_token.value)
             self.buildTree(self.current_token.value, 2)
 
-#Defining process Af
-    def procAf(self):
+    #Defining process Af
+    def processAf(self):
         print('procAf')
 
-        self.procAp()
+        self.processAp()
         print('Af->Ap')
         while self.current_token.value == '**':
             self.read()
-            self.procAf()
+            self.processAf()
             print('Af->Ap ** Af')
             self.buildTree("**", 2)
 
-#Defining process Ap
-    def procAp(self):
+    #Defining process Ap
+    def processAp(self):
         print('procAp')
 
-        self.procR()
+        self.processR()
         print('Ap->R')
         while self.current_token.value == '@':
             self.read()
-            self.procR()
+            self.processR()
             print('Ap->R @ R')
             self.buildTree("@", 2)
 
-#Defining process R
-    def procR(self):
+    #Defining process R
+    def processR(self):
         print('procR')
 
-        self.procRn()
+        self.processRn()
         print('R->Rn')
         # self.read()
 
@@ -405,14 +398,12 @@ class ASTParser:
                                            Tokenizer.TokenType.STRING] or self.current_token.value in ['true', 'false',
                                                                                                         'nil', 'dummy',
                                                                                                         "("]):
-            self.procRn()
+            self.processRn()
             print('R->R Rn')
             self.buildTree("gamma", 2)
 
-            # self.read()
-
-#Defining process Rn
-    def procRn(self):
+    #Defining process Rn
+    def processRn(self):
         print("procRn")
 
         if self.current_token.type in [Tokenizer.TokenType.ID, Tokenizer.TokenType.INT,
@@ -429,64 +420,60 @@ class ASTParser:
 
         elif self.current_token.value == '(':
             self.read()
-            self.procE()
+            self.processE()
             if self.current_token.value != ')':
                 print("Error: ) is expected")
                 return
             self.read()
             print('Rn->( E )')
-            # self.buildTree("()", 1)
 
-#Defining process D
-    def procD(self):
+    #Defining process D
+    def processD(self):
         print('procD')
 
-        self.procDa()
+        self.processDa()
         print('D->Da')
         while self.current_token.value == 'within':
             self.read()
-            self.procD()
+            self.processD()
             print('D->Da within D')
             self.buildTree("within", 2)
 
-#Defining process Da
-    def procDa(self):
+    #Defining process Da
+    def processDa(self):
         print('procDa')
 
-        self.procDr()
+        self.processDr()
         print('Da->Dr')
         n = 0
         while self.current_token.value == 'and':
             n += 1
             self.read()
-            self.procDa()
+            self.processDa()
             print('Da->and Dr')
-        # if n == 0:
-        #     print("Error")
-        #     return
         if n > 0:
             self.buildTree("and", n + 1)
 
-#Defining process Dr
-    def procDr(self):
+    #Defining process Dr
+    def processDr(self):
         print('procDr')
 
         if self.current_token.value == 'rec':
             self.read()
-            self.procDb()
+            self.processDb()
             print('Dr->rec Db')
             self.buildTree("rec", 1)
 
-        self.procDb()
+        self.processDb()
         print('Dr->Db')
 
-#Defining process Db
-    def procDb(self):
+    #Defining process Db
+    def processDb(self):
         print('procDb')
 
         if self.current_token.value == '(':
             self.read()
-            self.procD()
+            self.processD()
             if self.current_token.value != ')':
                 print("Error: ) is expected")
                 return
@@ -498,29 +485,27 @@ class ASTParser:
             self.read()
 
             if self.current_token.type == Tokenizer.TokenType.COMMA:
-                # Db -> Vl '=' E => '='
                 self.read()
-                self.procVb()
+                self.processVb()
 
                 if self.current_token.value != '=':
                     print("Error: = is expected")
                     return
                 self.buildTree(",", 2)
                 self.read()
-                self.procE()
+                self.processE()
                 self.buildTree("=", 2)
             else :
                 if self.current_token.value == '=':
                     self.read()
-                    self.procE()
+                    self.processE()
                     print('Db->id = E')
                     self.buildTree("=", 2)
 
                 else :
-
                     n = 0
                     while self.current_token.type == Tokenizer.TokenType.ID or self.current_token.value == '(':
-                        self.procVb()
+                        self.processVb()
                         n += 1
 
                     if n == 0:
@@ -531,46 +516,41 @@ class ASTParser:
                         print("Error: = is expected")
                         return
                     self.read()
-                    self.procE()
+                    self.processE()
                     print('Db->identifier Vb+ = E')
                     self.buildTree("function_form", n + 2)
 
-#Defining process Vb
-    def procVb(self):
+    #Defining process Vb
+    def processVb(self):
         print('procVb')
         if self.current_token.type == Tokenizer.TokenType.ID:
             self.read()
             print('Vb->id')
-            # self.buildTree("id", 1)
 
         elif self.current_token.value == '(':
             self.read()
-            # print(self.current_token.value)
             if self.current_token.type == ')':
                 print('Vb->( )')
                 self.buildTree("()", 0)
                 self.read()
             else:
-                self.procVL()
+                self.processVL()
                 print('Vb->( Vl )')
                 if self.current_token.value != ')':
                     print("Error: ) is expected")
                     return
             self.read()
 
-            # self.buildTree("()", 1)
-
         else:
             print("Error: ID or ( is expected")
             return
 
-#Defining process Vl
-    def procVL(self):
+    #Defining process Vl
+    def processVL(self):
         print("procVL")
         print("559 "+str(self.current_token.value))
 
         if self.current_token.type != Tokenizer.TokenType.ID:
-            # Should Handle Errors
             print("562 VL: Identifier expected")  
         else:
             print('VL->' + self.current_token.value)
@@ -578,10 +558,8 @@ class ASTParser:
             self.read()
             trees_to_pop = 0
             while self.current_token.value == ',':
-                # Vl -> '<IDENTIFIER>' list ',' => ','?;
                 self.read()
                 if self.current_token.type != Tokenizer.TokenType.ID:
-                    # Should Handle Errors
                     print(" 572 VL: Identifier expected") 
                 self.read()
                 print('VL->id , ?')
@@ -589,17 +567,14 @@ class ASTParser:
                 trees_to_pop += 1
             print('498')
             if trees_to_pop > 0:
-                self.buildTree(',', trees_to_pop +1)  # +1 for the first identifier
+                self.buildTree(',', trees_to_pop +1) 
 
-
-import sys
-input_path="tests/test_1.txt"
+input_path="tests/test_3.txt"
 with open(input_path) as file:
     program = file.read()
 
 stack = []
 tokens = []
-# tokenize input
 tokenizer = Tokenizer.Tokenizer(program)
 token = tokenizer.get_next_token()
 print(token.type, token.value)
@@ -621,7 +596,7 @@ parser.tokens = tokens
 parser.current_token = tokens[0]
 parser.index = 0
 
-parser.procE()
+parser.processE()
 print(len(stack))
 root = stack[0]
 root.print_tree()
