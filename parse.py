@@ -571,6 +571,7 @@ tokens = []
 tokenizer = Tokenizer.Tokenizer(program)
 token = tokenizer.getNextToken()
 print(token.type, token.value)
+
 while token.type != Tokenizer.TokenType.EOF:
     print(token.type, token.value)
     if token.value in Tokenizer.RESERVED_KEYWORDS:
@@ -582,17 +583,21 @@ while token.type != Tokenizer.TokenType.EOF:
 screener = Screener(tokens)
 tokens = screener.screen()
 
-print(" after screening ")
+# creating a parser object
 
 parser = ASTParser()
 parser.tokens = tokens
 parser.current_token = tokens[0]
 parser.index = 0
 
+# start the parsing process
+
 parser.processE()
-print(len(stack))
 root = stack[0]
 root.print_tree()
+
 with open(input_path+"_output", "w") as file:
     root.indentation = 0
     root.print_tree_to_file(file)
+
+
