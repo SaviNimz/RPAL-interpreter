@@ -569,7 +569,7 @@ with open(input_path) as file:
 stack = []
 tokens = []
 tokenizer = Tokenizer.Tokenizer(program)
-token = tokenizer.get_next_token()
+token = tokenizer.getNextToken()
 print(token.type, token.value)
 while token.type != Tokenizer.TokenType.EOF:
     print(token.type, token.value)
@@ -577,7 +577,7 @@ while token.type != Tokenizer.TokenType.EOF:
         token.type = Tokenizer.TokenType.RESERVED_KEYWORD
 
     tokens.append(token)
-    token = tokenizer.get_next_token()
+    token = tokenizer.getNextToken()
 
 screener = Screener(tokens)
 tokens = screener.screen()
