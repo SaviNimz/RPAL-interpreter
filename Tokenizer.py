@@ -1,20 +1,16 @@
-
 from enum import Enum
 
-PUNCTION = ['(', ')', ';', ',']
-
+PUNCTUATION = ['(', ')', ';', ',']
+RESERVED_KEYWORDS = ['fn','where', 'let', 'aug', 'within' ,'in' ,'rec' ,'eq','gr','ge','ls','le','ne','or','@','not','&','true','false','nil','dummy','and','|']
 
 class Token():
     def __init__(self, type, value):
         self.type = type
         self.value = value
 
-
-RESERVED_KEYWORDS = ['fn','where', 'let', 'aug', 'within' ,'in' ,'rec' ,'eq','gr','ge','ls','le','ne','or','@','not','&','true','false','nil','dummy','and','|']
-
 class TokenType(Enum):
+    #TOKEN TYPES
     RESERVED_KEYWORD = 'RESERVED_KEYWORD'
-
     ID = 'ID'
     COMMENT = 'COMMENT'
     INT = 'INT'
@@ -43,7 +39,7 @@ class TokenType(Enum):
     BACK_TICK = 'BACK_TICK'
     DOUBLE_QUOTE = 'DOUBLE_QUOTE'
     QUESTION_MARK = 'QUESTION_MARK'
-    PUNCTION = 'PUNCTION'
+    PUNCTUATION = 'PUNCTUATION'
     OR_OPERATOR = 'OR_OPERATOR'
     STRING = 'STRING'
     TERNARY_OPERATOR = 'TERNARY_OPERATOR'
@@ -82,7 +78,7 @@ class Tokenizer:
             self.state.current_char = self.text[self.pos]
             self.state.column_number += 1
 
-    def skip_whitespace(self):
+    def skipWhitespace(self):
         while self.state.current_char is not None and self.state.current_char.isspace():
             if self.state.current_char == '\n':
                 self.state.line_number += 1
@@ -110,18 +106,19 @@ class Tokenizer:
             self.advance()
         return result
 
+    
+    def isComment(self):
+        if self.state.current_char is not None and self.state.current_char == '/':
+            return True
+        else:
+            return False
+
     def comment(self):
         result = ''
         while self.state.current_char is not None and self.state.current_char != '\n':
             result += self.state.current_char
             self.advance()
         return result
-
-    def isCommnet(self):
-        if self.state.current_char is not None and self.state.current_char == '/':
-            return True
-        else:
-            return False
 
     def string(self):
         result = ''
@@ -131,11 +128,11 @@ class Tokenizer:
         self.advance()
         return result
 
-    def get_next_token(self):
+    def getNextToken(self):
         while self.state.current_char is not None:
 
             if self.state.current_char.isspace():
-                self.skip_whitespace()
+                self.skipWhitespace()
                 continue
 
             # tokenize digits
@@ -158,8 +155,8 @@ class Tokenizer:
 
 
             # tokenize punctuation
-            elif self.state.current_char in PUNCTION:
-                token = Token(TokenType.PUNCTION, self.state.current_char)
+            elif self.state.current_char in PUNCTUATION:
+                token = Token(TokenType.PUNCTUATION, self.state.current_char)
                 self.advance()
                 return token
             
@@ -268,7 +265,7 @@ class Screener:
         self.text = None
         self.tokens=tokens
 
-    def merge_tokens(self ):
+    def mergeTokens(self ):
         tokens=self.tokens
         for i in range(len(tokens)):
             if i < len(tokens) and tokens[i].type == TokenType.MINUS and tokens[i + 1].type == TokenType.LESSER_THAN:
@@ -297,7 +294,7 @@ class Screener:
 
         self.tokens=tokens
 
-    def remove_comments(self):
+    def removeComments(self):
         tokens = self.tokens
         tokens_to_be_Poped=[]
         for (i , token) in enumerate(tokens):
@@ -307,9 +304,10 @@ class Screener:
             tokens.pop(i)
 
         self.tokens = tokens
+
     def screen(self):
-        self.merge_tokens()
-        self.remove_comments()
+        self.mergeTokens()
+        self.removeComments()
         return self.tokens
 
 
@@ -318,7 +316,7 @@ with open("tests/test_1.txt") as file:
 
 # tokenize input
 tokenizer = Tokenizer(program)
-token = tokenizer.get_next_token()
+token = tokenizer.getNextToken()
 tokens = []
 
 tokens.append(token)
@@ -327,11 +325,8 @@ tokens.append(token)
 while token.type != TokenType.EOF:
     # print(token.type, token.value)
 
-    token = tokenizer.get_next_token()
+    token = tokenizer.getNextToken()
     tokens.append(token)
 
 screener = Screener(tokens)
 tokens = screener.screen()
-
-# for t in tokens:
-#     print(t.value)
