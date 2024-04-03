@@ -130,131 +130,127 @@ class Tokenizer:
 
     def getNextToken(self):
         while self.state.current_char is not None:
+            match self.state.current_char:
+                case char if char.isspace():
+                    self.skipWhitespace()
+                    continue
 
-            if self.state.current_char.isspace():
-                self.skipWhitespace()
-                continue
+                case char if char.isdigit():
+                    return Token(TokenType.INT, self.integer())
 
-            # tokenize digits
-            elif self.state.current_char.isdigit():
-                return Token(TokenType.INT, self.integer())
+                case char if char.isalpha():
+                    return Token(TokenType.ID, self.identifier())
 
-            ## tokenize identifier
-            elif self.state.current_char.isalpha():
-                return Token(TokenType.ID, self.identifier())
-            
-            elif self.state.current_char == '/':
-                if self.text[self.pos + 1] == '/':
+                case '/':
+                    if self.text[self.pos + 1] == '/':
+                        self.advance()
+                        self.advance()
+                        return Token(TokenType.COMMENT, self.comment())
+
+                case "'":
                     self.advance()
+                    return Token(TokenType.STRING, self.string())
+
+                case char if char in PUNCTUATION:
+                    token = Token(TokenType.PUNCTUATION, self.state.current_char)
                     self.advance()
-                    return Token(TokenType.COMMENT, self.comment())
+                    return token
 
-            elif self.state.current_char == "'":
-                self.advance()
-                return Token(TokenType.STRING, self.string())
+                case '+':
+                    self.advance()
+                    return Token(TokenType.PLUS, '+')
 
+                case '-':
+                    self.advance()
+                    return Token(TokenType.MINUS, '-')
 
-            # tokenize punctuation
-            elif self.state.current_char in PUNCTUATION:
-                token = Token(TokenType.PUNCTUATION, self.state.current_char)
-                self.advance()
-                return token
-            
-            elif self.state.current_char == '+':
-                self.advance()
-                return Token(TokenType.PLUS, '+')
+                case '*':
+                    self.advance()
+                    return Token(TokenType.MUL, '*')
 
-            elif self.state.current_char == '-':
-                self.advance()
-                return Token(TokenType.MINUS, '-')
+                case '<':
+                    self.advance()
+                    return Token(TokenType.GREATER_THAN, '<')
 
-            elif self.state.current_char == '*':
-                self.advance()
-                return Token(TokenType.MUL, '*')
+                case '>':
+                    self.advance()
+                    return Token(TokenType.LESSER_THAN, '>')
 
-            elif self.state.current_char == '<':
-                self.advance()
-                return Token(TokenType.GREATER_THAN, '<')
+                case '&':
+                    self.advance()
+                    return Token(TokenType.AMPERSAND_OPERATOR, '&')
 
-            elif self.state.current_char == '>':
-                self.advance()
-                return Token(TokenType.LESSER_THAN, '>')
+                case '.':
+                    self.advance()
+                    return Token(TokenType.DOT_OPERATOR, '.')
 
-            elif self.state.current_char == '&':
-                self.advance()
-                return Token(TokenType.AMPERSAND_OPERATOR, '&')
+                case '@':
+                    self.advance()
+                    return Token(TokenType.AT_OPERATOR, '@')
 
-            elif self.state.current_char == '.':
-                self.advance()
-                return Token(TokenType.DOT_OPERATOR, '.')
+                case ';':
+                    self.advance()
+                    return Token(TokenType.SEMICOLON, ';')
 
-            elif self.state.current_char == '@':
-                self.advance()
-                return Token(TokenType.AT_OPERATOR, '@')
+                case '=':
+                    self.advance()
+                    return Token(TokenType.EQUAL, '=')
 
-            elif self.state.current_char == ';':
-                self.advance()
-                return Token(TokenType.SEMICOLON, ';')
+                case '~':
+                    self.advance()
+                    return Token(TokenType.CURL, '~')
 
-            elif self.state.current_char == '=':
-                self.advance()
-                return Token(TokenType.EQUAL, '=')
+                case '[':
+                    self.advance()
+                    return Token(TokenType.SQUARE_OPEN_BRACKET, '[')
 
-            elif self.state.current_char == '~':
-                self.advance()
-                return Token(TokenType.CURL, '~')
+                case ']':
+                    self.advance()
+                    return Token(TokenType.SQUARE_CLOSE_BRACKET, ']')
 
-            elif self.state.current_char == '[':
-                self.advance()
-                return Token(TokenType.SQUARE_OPEN_BRACKET, '[')
+                case '$':
+                    self.advance()
+                    return Token(TokenType.DOLLAR, '$')
 
-            elif self.state.current_char == ']':
-                self.advance()
-                return Token(TokenType.SQUARE_CLOSE_BRACKET, ']')
+                case '!':
+                    self.advance()
+                    return Token(TokenType.EXCLAMATION_MARK, '!')
 
-            elif self.state.current_char == '$':
-                self.advance()
-                return Token(TokenType.DOLLAR, '$')
+                case '#':
+                    self.advance()
+                    return Token(TokenType.HASH_TAG, '#')
 
-            elif self.state.current_char == '!':
-                self.advance()
-                return Token(TokenType.EXCLAMATION_MARK, '!')
+                case '%':
+                    self.advance()
+                    return Token(TokenType.MODULUS, '%')
 
-            elif self.state.current_char == '#':
-                self.advance()
-                return Token(TokenType.HASH_TAG, '#')
+                case '^':
+                    self.advance()
+                    return Token(TokenType.CARROT, '^')
 
-            elif self.state.current_char == '%':
-                self.advance()
-                return Token(TokenType.MODULUS, '%')
+                case '{':
+                    self.advance()
+                    return Token(TokenType.CURLY_OPEN_BRACKET, '{')
 
-            elif self.state.current_char == '^':
-                self.advance()
-                return Token(TokenType.CARROT, '^')
+                case '}':
+                    self.advance()
+                    return Token(TokenType.CURLY_CLOSE_BRACKET, '}')
 
-            elif self.state.current_char == '{':
-                self.advance()
-                return Token(TokenType.CURLY_OPEN_BRACKET, '{')
+                case '`':
+                    self.advance()
+                    return Token(TokenType.BACK_TICK, '`')
 
-            elif self.state.current_char == '}':
-                self.advance()
-                return Token(TokenType.CURLY_CLOSE_BRACKET, '}')
+                case '"':
+                    self.advance()
+                    return Token(TokenType.DOUBLE_QUOTE, '"')
 
-            elif self.state.current_char == '`':
-                self.advance()
-                return Token(TokenType.BACK_TICK, '`')
+                case '?':
+                    self.advance()
+                    return Token(TokenType.QUESTION_MARK, '?')
 
-            elif self.state.current_char == '\"':
-                self.advance()
-                return Token(TokenType.DOUBLE_QUOTE, '\"')
-
-            elif self.state.current_char == '?':
-                self.advance()
-                return Token(TokenType.QUESTION_MARK, '?')
-
-            elif self.state.current_char == '|':
-                self.advance()
-                return Token(TokenType.OR_OPERATOR, '|')
+                case '|':
+                    self.advance()
+                    return Token(TokenType.OR_OPERATOR, '|')
 
             self.error()
 
@@ -331,5 +327,5 @@ while token.type != TokenType.EOF:
 screener = Screener(tokens)
 tokens = screener.screen()
 
-# for t in tokens:
-#     print(t.value)
+for t in tokens:
+    print(t.value)
