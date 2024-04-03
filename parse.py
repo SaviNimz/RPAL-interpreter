@@ -562,7 +562,7 @@ class ASTParser:
             if trees_to_pop > 0:
                 self.buildTree(',', trees_to_pop +1) 
 
-input_path="tests/test_1.txt"
+input_path="tests/test_5.txt"
 with open(input_path) as file:
     program = file.read()
 
