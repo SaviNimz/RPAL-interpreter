@@ -392,12 +392,9 @@ class ASTParser:
 
         self.processRn()
         print('R->Rn')
-        # self.read()
-
         while (self.current_token.type in [Tokenizer.TokenType.ID, Tokenizer.TokenType.INT,
-                                           Tokenizer.TokenType.STRING] or self.current_token.value in ['true', 'false',
-                                                                                                        'nil', 'dummy',
-                                                                                                        "("]):
+                                            Tokenizer.TokenType.STRING] or self.current_token.value in 
+                                            ['true', 'false','nil', 'dummy',"("]):
             self.processRn()
             print('R->R Rn')
             self.buildTree("gamma", 2)
@@ -457,7 +454,6 @@ class ASTParser:
     #Defining process Dr
     def processDr(self):
         print('procDr')
-
         if self.current_token.value == 'rec':
             self.read()
             self.processDb()
@@ -501,17 +497,14 @@ class ASTParser:
                     self.processE()
                     print('Db->id = E')
                     self.buildTree("=", 2)
-
                 else :
                     n = 0
                     while self.current_token.type == Tokenizer.TokenType.ID or self.current_token.value == '(':
                         self.processVb()
                         n += 1
-
                     if n == 0:
                         print("Error: ID or ( is expected")
                         return
-
                     if self.current_token.value != '=':
                         print("Error: = is expected")
                         return
