@@ -69,5 +69,31 @@ class ASTNode:
 
                     return root
                 
+            case "function_form":
+                P = root.child
+                V = P.sibling
+                Vs = V.sibling
 
+                newRoot = ASTNode("=")
+                newRoot.child = P
+
+                lambdaNode = ASTNode("lambda")
+                P.sibling = lambdaNode
+                lambdaNode.previous = P
+
+                while Vs.sibling != None:
+                    lambdaNode.child = V
+                    lambdaNode = ASTNode("lambda")
+                    V.sibling = lambdaNode
+                    lambdaNode.previous = V
+                    V = Vs
+                    Vs = Vs.sibling
+
+                lambdaNode.child = V
+                V.sibling = Vs
+                Vs.previous = V
+
+                newRoot.sibling = nextSibling
+
+                return newRoot
 
