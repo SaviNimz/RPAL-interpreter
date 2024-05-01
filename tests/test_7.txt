@@ -1,0 +1,11 @@
+let palindrom n = n eq reverse (n, 0) -> 'Palindrome' | 'Not a Palindrome'
+    where rec reverse (n, x) = n gr 0 -> reverse (n/10, (x*10 + (n-(n/10)*10))) | x
+in Print(palindrom 1001)
+
+let rec reverse (n, x) = n gr 0 -> reverse (n/10, (x*10 + n - (n/10)*10)) | x
+	within
+		rec palindrom(a, b) = 
+			b ls a -> '' |
+			reverse (a,0) eq a -> (pali(a+1,b), print(' '), print(a))|
+				palindrom(a+1,b)						
+in palidrom(1, 10)

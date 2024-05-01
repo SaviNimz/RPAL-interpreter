@@ -1,0 +1,15 @@
+let
+.function_form
+..<ID:sign>
+..<ID:N>
+..->
+...ls
+....<ID:N>
+....<INT:0>
+...<STRING:Negative>
+...<STRING:Positive>
+.gamma
+..<ID:print>
+..gamma
+...<ID:sign>
+...<INT:10>
