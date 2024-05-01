@@ -161,3 +161,30 @@ class ASTNode:
 
                 return newRoot
             
+            case "rec":
+                eq = root.child
+                X = eq.child
+                E = X.sibling
+
+                new_root = ASTNode("=")
+                new_root.child = X
+
+                copy_X = X.createCopy()
+                gamma = ASTNode("gamma")
+                X.sibling = gamma
+                gamma.previous = X
+
+                y_star = ASTNode("Y*")
+                gamma.child = y_star
+                lambda_ = ASTNode("lambda")
+                y_star.sibling = lambda_
+                lambda_.previous = y_star
+
+                lambda_.child = copy_X
+                copy_X.sibling = E
+                E.previous = copy_X
+                new_root.sibling = nextSibling
+
+
+                return new_root
+
