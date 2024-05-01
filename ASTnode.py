@@ -42,3 +42,32 @@ class ASTNode:
                     root.sibling = nextSibling
 
                     return root
+                
+            case "where":
+                if root.child.sibling.type== "=":
+                    P = root.child
+                    equal = P.sibling
+                    X = equal.child
+                    E = X.sibling
+                    lambdaNode = ASTNode("lambda")
+                    gammaNode = ASTNode("gamma")
+
+                    gammaNode.child = lambdaNode
+                    lambdaNode.sibling = E
+                    lambdaNode.child = X
+
+                    X.sibling = P
+                    # P.previous = gammaNode
+                    P.sibling = None
+
+                    gammaNode.sibling = nextSibling
+
+
+                    return gammaNode
+                else:
+                    root.sibling = nextSibling
+
+                    return root
+                
+
+
