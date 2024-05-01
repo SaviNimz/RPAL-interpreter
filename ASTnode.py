@@ -188,3 +188,26 @@ class ASTNode:
 
                 return new_root
 
+            case "@":
+                E1 = root.child
+                N = E1.sibling
+                E2 = N.sibling
+
+                new_root = ASTNode("gamma")
+                gamma_l = ASTNode("gamma")
+
+                new_root.child = gamma_l
+                gamma_l.sibling = E2
+                # E2.previous = gamma_l
+                gamma_l.child = N
+                N.sibling = E1
+                # E1.previous = N
+                E1.sibling = None
+                new_root.sibling=nextSibling
+
+                return new_root
+
+            case _:
+                return root
+
+        return root
