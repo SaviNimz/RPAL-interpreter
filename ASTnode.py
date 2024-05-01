@@ -97,3 +97,67 @@ class ASTNode:
 
                 return newRoot
 
+            case "within":
+                if root.child.type =="=" and root.child.sibling.type == "=":
+                    eq1 = root.child
+                    eq2 = eq1.sibling
+                    X1 = eq1.child
+                    E1 = X1.sibling
+                    X2 = eq2.child
+                    E2 = X2.sibling
+
+                    newRoot = ASTNode("=")
+                    newRoot.child = X2
+                    gamma = ASTNode("gamma")
+                    lambdaNode = ASTNode("lambda")
+
+                    X2.sibling = gamma
+                    gamma.previous = X2
+                    gamma.child = lambdaNode
+                    lambdaNode.sibling = E1
+                    E1.previous = lambdaNode
+                    lambdaNode.child = X1
+                    X1.sibling = E2
+                    E2.previous = X1
+                    E1.sibling = None
+                    newRoot.sibling = nextSibling
+
+                    return newRoot
+                else :
+                    root.sibling = nextSibling
+
+                    return root
+
+            case "and":
+                eq = root.child
+
+                newRoot = ASTNode("=")
+                comma = ASTNode(",")
+                tau = ASTNode("tau")
+
+                newRoot.child = comma
+                comma.sibling = tau
+                tau.previous = comma
+
+                X = eq.child
+                E = X.sibling
+
+                comma.child = X
+                tau.child = E
+
+                eq = eq.sibling
+                while eq != None:
+                    X.sibling = eq.child
+                    eq.child.previous = X
+                    E.sibling = eq.child.sibling
+                    eq = eq.sibling
+                    X = X.sibling
+                    E = E.sibling
+
+                X.sibling = None
+                E.sibling = None
+                newRoot.sibling = nextSibling
+
+
+                return newRoot
+            
