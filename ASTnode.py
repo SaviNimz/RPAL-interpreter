@@ -1,6 +1,5 @@
 class ASTNode:
 
-
     def standarize(self, root):
 
         if root == None:
@@ -19,8 +18,6 @@ class ASTNode:
 
         match root.type:
             case "let":
-                #print("let")
-                #print( "type : " , root.child.type)
                 if root.child.type == "=":
                     #print("equal")
                     equal = root.child
