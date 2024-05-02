@@ -27,10 +27,8 @@ class CSEMachine :
         self.control = []
         self.stack.append(env)
         self.control.append(env)
-        # self.control.append(0)
-        self.control.extend(ctrlStructures[0])
-        #print(ctrlStructures[0])
 
+        self.control.extend(ctrlStructures[0])
 
     def binOp(self ,op, rand1,rand2):
 
@@ -42,24 +40,20 @@ class CSEMachine :
             val2=rand2.value
 
         if binop_type == "+":
-            #print(val1, val2)
             result = ASTNode.ASTNode("TokenType.INT")
             result.value = str(int(val1) + int(val2))
-            #print("result,", (result.value))
+
             return result
 
         elif binop_type == "-":
-            #print(val1,val2)
             result=ASTNode.ASTNode( "TokenType.INT")
             result.value=str(int(val1) -int(val2))
-            #print("result,",(result.value))
+
             return result
 
         elif binop_type == "*":
-            #print(val1 ,val2)
             result= ASTNode.ASTNode(  "TokenType.INT" )
             result.value=str(int(val1 )* int(val2))
-            #print(result.value)
             return result
         elif binop_type == "/":
 
@@ -70,12 +64,11 @@ class CSEMachine :
         elif binop_type == "**":
             result = ASTNode.ASTNode("TokenType.INT")
             result.value = str( math.pow(int(val2) ,int(val1)))
-            # print("*************",result.value)
+
             return result
 
 
         elif binop_type == "&":
-            #print(val1 ,val2)
             result=""
             if val1 == "true" and val2 == "true":
                 result = ASTNode.ASTNode("true")
@@ -86,7 +79,7 @@ class CSEMachine :
             return result
 
         elif binop_type == "or":
-            # print( "################212####################",val1 ,val2)
+
             result=""
             if val1 == "true" and val2 == "true":
                 result = ASTNode.ASTNode("true")
@@ -102,21 +95,12 @@ class CSEMachine :
 
 
             else:
-                # print("################105/####################")
-
                 result = ASTNode.ASTNode("false")
                 result.value = "false"
-            # print("################109####################",result.value)
             return result
 
 
         elif binop_type == "aug":
-            # temp=rand1
-            # rand1=rand2
-            # rand2=temp
-
-            # #print("rand1 ",rand1.type,"rand2",rand2.type)
-
 
             if isinstance(rand1, list):
                 if isinstance(rand2, list):
@@ -272,7 +256,7 @@ class CSEMachine :
                 else:
                     result=ASTNode.ASTNode("false")
                     result.value="false"
-            # result=(ASTNode.ASTNode("true") if val1 == val2 else ASTNode.ASTNode("false"))
+
             print(result.type)
             return result
 
@@ -319,16 +303,11 @@ class CSEMachine :
             string = obj.value
             if isinstance(obj.value,str):
 
-
-
                 if "\\n" in string:
                     string=string.replace("\\n","\n")
                 if "\\t" in string:
                     string=string.replace("\\t","\t")
-
-
             print(string ,end="")
-            # CSEMachine.results.append({self.file:  obj.value})
 
         if isinstance(obj ,list):
             print("(",end="")
@@ -336,101 +315,40 @@ class CSEMachine :
                 self.Print(i)
                 if index < len(obj)-1:
                     print(",",end=" " )
-                # if isinstance(i ,ASTNode.ASTNode):
-                #
-                #     result_list+=  str(i.value) + " ,"
+
             print(")",end="\n")
-
-            # CSEMachine.results.append({self.file: result_list+" )"})
-
 
     def execute(self):
 
         count = 0;
         while len(self.control)>0:
-            # print("#######")
+
             controlTop=self.control[-1]
             stackTop=self.stack[-1]
 
-
-            # print the control structures
-            # print("control structures #################")
-            # for i in range(len(self.control)):
-            #     if isinstance(self.control[i],LambdaExpression):
-            #         print( "( L",self.control[i].envIdx, self.control[i].lambdaIdx, type(self.control[i].item) , ")",end=" ")
-            #     elif isinstance(self.control[i],ASTNode.ASTNode):
-            #         if self.control[i].value is not None :
-            #             print(self.control[i].value ,end=" ")
-            #         else : print (self.control[i].type ,end=" ")
-            #
-            #     elif isinstance(self.control[i],Tau):
-            #         print( "( tau",self.control[i].n,")" , end=" ")
-            #     elif isinstance(self.control[i],Beta):
-            #         print("B",end=" ")
-            #     elif isinstance(self.control[i],Envronment):
-            #         print("e"+str(self.control[i].idx),end=" ")
-            #
-            #     ## #print list
-            #     else:print(self.control[i],end=" ")
-            # print(" #########",end=" ")
-            # for i in range(len(self.stack)-1 ,-1 ,-1):
-            #     if isinstance(self.stack[i], LambdaExpression):
-            #         print("( L ", self.stack[i].envIdx, self.stack[i].lambdaIdx, ")",
-            #               end=" ")
-            #     elif isinstance(self.stack[i], ASTNode.ASTNode):
-            #         if self.stack[i].value is not None :
-            #             print(self.stack[i].value ,end=" ")
-            #         else : print (self.stack[i].type ,end=" ")
-            #
-            #     elif isinstance(self.stack[i], Tau):
-            #         print(self.stack[i].n, end=" ")
-            #     elif isinstance(self.stack[i], Beta):
-            #         print("B", end=" ")
-            #     elif isinstance(self.stack[i], Envronment):
-            #         print("e" + str(self.stack[i].idx), end=" ")
-            #     else:print(self.stack[i],end=" ")
-            #
-            #
-            # print("\n")
-
-
-
-
-
-            # #print("control ",self.control)
-            # #print("stack",self.stack)
-
-            # #print(type(controlTop)==type(ASTNode.ASTNode))
-
             if isinstance(controlTop, LambdaExpression):
-                #print("Control is lambdha ")
                 lambdha=self.control.pop(-1)
                 lambdha.envIdx=self.curEnvIdx
                 self.stack.append(lambdha)
-                #print("done")
 
             elif isinstance(controlTop, ASTNode.ASTNode):
-                #print("Control is ASTNode.ASTNode " ,controlTop.type)
+
                 node=controlTop
-                #print(node.type)
+
                 if node.type=="gamma":
                     if isinstance(stackTop, LambdaExpression):
-                        self.control.pop()  # remove gamma
-                        self.stack.pop()  # remove lambda
+                        self.control.pop()  
+                        self.stack.pop()  
 
-                        # Tuple rand = (Tuple)stack.peek(); // get rand from stack
-                        rand = self.stack[-1] # get rand from stack
-                        self.stack.pop()  # remove rand from stack
+                        rand = self.stack[-1] 
+                        self.stack.pop()  
 
                         lambdaStack = stackTop
                         k = lambdaStack.lambdaIdx
                         envIdLambda = lambdaStack.envIdx
-                        # envIdLambda = self.curEnvIdx
+
                         tokenStackLambdaList = None
                         tokenStackLambda = None
-
-
-
 
                         if isinstance(lambdaStack.item, ASTNode.ASTNode):
                             tokenStackLambda = lambdaStack.item  # the variable of lambda of stack
@@ -445,24 +363,17 @@ class CSEMachine :
                         # curEnvIdx += 1
                         self.maxEnvIdx += 1
                         self.curEnvIdx = self.maxEnvIdx
-                        env = Envronment(self.curEnvIdx)
+                        env = Environment(self.curEnvIdx)
 
-                        # logger.info("putting in current env " + curEnvIdx + "| variable : " + tokenStackLambda.name + "| value: " + rand);
                         if tokenStackLambdaList is None:
-                            #print("tokenStackLambdaList was null" ,envIdLambda)
+
                             env.set_env_params(self.mapEnvironments.get(envIdLambda), tokenStackLambda.value, rand)
                         else:
-                        #     # rand must be a list then
-                        #     if not isinstance(rand, Tuple):
-                        #         #print("rand is not a list, error !!!!: rule 11, rand is:", rand)
-                        #     else:
-                        #         logger.info("rand is: " + rand)
-
                             cnt = 0
                             for item in tokenStackLambdaList:
                                 env.set_env_params(self.mapEnvironments.get(envIdLambda), item.value,
                                                    rand[cnt])
-                                # logger.info("putting " + item.name + " = " +  ((Token)(((Tuple)rand).getElementAtIndexN(cnt))).name);
+                              
                                 cnt += 1
 
                         self.control.append(env)
@@ -471,18 +382,11 @@ class CSEMachine :
                         # maintain environment variables
                         self.curEnvStack.append(env)
                         self.mapEnvironments[self.curEnvIdx] = env
-                    # if val is not None:
-                    #     self.stack.append(val)
-                    # else:
-                    #     #print("Variable not found in current environment")
-                    #     exit(-1)
 
                     elif isinstance( stackTop, ASTNode.ASTNode):
-                        #print("applying rule 3")
-                        #print(stackTop.type)
+
                         if stackTop.type == "Y*":
-                            #print("261")
-                            #print(self.stack)
+
 
                             self.control.pop(-1)
                             self.stack.pop(-1)
@@ -502,20 +406,18 @@ class CSEMachine :
                             stackTop =self.stack[-1]
                             str1 = stackTop.value
                             self.stack.pop(-1)
-                            #print("in conc: stackTop:", self.stack[-1].value)
+
                             str2 = self.stack[-1].value
                             self.stack.pop(-1)  # remove str2
-                            #print("in conc: str1:", str1, "| str2:", str2)
+
                             str_result =  str2 +str1
                             result=ASTNode.ASTNode("TokenType.STRING")
                             result.value= str_result
                             self.stack.append(result)  # push result into stack
 
-                            self.control.pop(-1)  # remove gamma from control
-                            # if controlTop.type != TokenType.GAMMA:
-                            #     #print("GAMMA expected, error !!! controlTop:", controlTop.name)
-                            self.control.pop(-1)  # remove gamma from control
-                            # controlTop = control[-1]
+                            self.control.pop(-1) 
+                            self.control.pop(-1)  
+
 
                         elif stackTop.value=="Stem":
                             self.control.pop(-1)
@@ -523,8 +425,7 @@ class CSEMachine :
                             str1=self.stack.pop(-1)
                             if len(str1.value) == 0:
                                 sys.exit(0)
-                            # if len(str1.value) == 1:
-                            #     value = ""
+
                             else:
                                 value = str1.value[0]
                             result = ASTNode.ASTNode("TokenType.STRING")
@@ -541,17 +442,13 @@ class CSEMachine :
                                 sys.exit(0)
                             if len(str1.value)==1:
                                 value=''
-                                # print("******************",str1.value[1:] , "******************",str1.value)
 
                             else:
 
-                                # print("******************",str1.value[1:] , "******************",str1.value)
                                 value=str1.value[1:]
                             result = ASTNode.ASTNode("TokenType.STRING")
                             result.value = value
                             self.stack.append(result)
-                            # self.stack.append(value)
-
                         elif stackTop.value== "Null":
                             self.control.pop(-1)
                             self.stack.pop(-1)
@@ -680,38 +577,6 @@ class CSEMachine :
                                 result.value = "false"
                                 self.stack.append(result)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         elif stackTop.value =="Order":
                             self.control.pop(-1)
                             self.stack.pop(-1)
@@ -754,9 +619,6 @@ class CSEMachine :
                         lambdaStack = LambdaExpression(eta.envId, eta.id, eta.tok)
                         self.stack.append(lambdaStack)
 
-
-
-
                 elif node.type in ["-", "+" , "*", "/","or","&","**" ,"aug" ,"gr",">=","ge",">","ls","<","<=","eq","ne","le" ]:
                     #print("Control is - ")
                     op=self.control.pop(-1)
@@ -764,11 +626,6 @@ class CSEMachine :
                     ran2=self.stack.pop(-1)
                     val=self.binOp(op,rand,ran2 )
                     self.stack.append(val)
-
-
-
-
-
 
                 elif node.type=="neg":
                     op = self.control.pop(-1)
@@ -781,10 +638,6 @@ class CSEMachine :
                     rand = self.stack.pop(-1)
                     val = self.unaryOp(op, rand)
                     self.stack.append(val)
-
-
-
-
 
                 elif node.type=="Y*":
                     #print("Ystar")
@@ -803,21 +656,14 @@ class CSEMachine :
 
 
                 else :
-                    # logger.info("no operator matched: rule 6 or 7 !!!!!!!!!: {}".format(controlTop.type))
-                    # rule 1 : lookup in current or parent environments, and put the value on stack
-                    # logger.info("applying rule 1")
+
                     self.control.pop()
                     curEnv = self.curEnvStack[-1]
                     type_ = controlTop.type
                     control_value=controlTop.value
-                    # logger.info("type is : {}".format(type_))
 
-                    # first lookup in the environment tree
                     if controlTop.type == "TokenType.ID":
-                        # do a lookup
-                        #print("here: {} looking up for : {}".format(controlTop.type, controlTop.value))
-                        # logger.info("here: {} looking up for : {}".format(controlTop.type.name(), controlTop.name))
-                        # logger.info("current envid: {}".format(curEnvIdx))
+
                         stackVal = curEnv.get_val(controlTop.value)
                         #print(stackVal)
 
@@ -841,23 +687,18 @@ class CSEMachine :
                                 # logger.info("pushing into stack value: {}".format(stackVal.name))
 
                         if stackVal is None:
-                            # if not found in the env tree, check if it was a special function
-                            # it may be a special function name which was not redefined
+
                             if control_value in ["Print", "Conc", "Stern", "Stem", "Order", "Isinteger", "Istruthvalue",
                                          "Isstring", "Isinteger",
                                          "Istuple", "Isfunction", "Isdummy", "ItoS", "Null"]:
-                                # just stack the Print, Stern, Stem, ItoS, Order, conc, may be: aug too
-                                # logger.info("pushing into stack : {}".format(type_))
+
                                 self.stack.append(controlTop)
                             else:
                                 #print("not found in any envs, some error!!!!!!")
                                 sys.exit(-1)
                     else:
-                        # just put into stack from control
-                        # logger.info("putting controlTop: {} | {} on stack".format(controlTop, controlTop.name))
+
                         self.stack.append(controlTop)
-
-
 
             elif isinstance(controlTop , Tau):
                 n = self.control[-1].n
@@ -867,8 +708,7 @@ class CSEMachine :
                 #print("adding Tuple")
 
                 while n > 0:
-                    # if isinstance(self.stack[-1], ASTNode.ASTNode):
-                        # print("adding", self.stack[-1].type, "to tuple")
+
                     tuple.append(self.stack.pop())
                     stackTop = self.stack[-1] if self.stack else None
                     n -= 1
@@ -894,15 +734,7 @@ class CSEMachine :
                 self.stack.append(stackTop)
                 # logger.info("exiting env: {}".format(curEnvStack.peek().get_env_idx()))
                 self.curEnvStack.pop()
-                # if not len(self.curEnvStack)>0:
-                #     # curEnvIdx = self.curEnvStack[0].get_env_idx()
-                #     if (self.stack[-1].value is not None):
-                #         return (self.stack[-1].value)
-
-
-
             count+=1
-            # print("##################",count,"#################")
             if (count>500):
                 break
 

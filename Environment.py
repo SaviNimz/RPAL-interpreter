@@ -1,6 +1,5 @@
 import logging
-from ASTnode import ASTNode
-
+from ASTNode import ASTNode
 
 class Environment:
     logger = logging.getLogger(__name__)
