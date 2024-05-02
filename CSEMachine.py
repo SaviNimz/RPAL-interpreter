@@ -9,6 +9,15 @@ from controlStructure import LambdaExpression, Beta, Tau
 class CSEMachine :
     results = []
     def __init__(self , ctrlStructures ,file):
+
+        """
+        Initialize the CSEMachine with control structures and file.
+
+        Parameters:
+        - ctrlStructures: List of control structures
+        - file: File to be processed
+        """
+                
         self.mapEnvironments={}
         self.curEnvIdx=0
         self.maxEnvIdx=0
@@ -30,7 +39,17 @@ class CSEMachine :
         self.control.extend(ctrlStructures[0])
 
     def binOp(self ,op, rand1,rand2):
+        """
+        Handle binary operations.
 
+        Parameters:
+        - op: Operator
+        - rand1: First operand
+        - rand2: Second operand
+
+        Returns:
+        - Result of the operation
+        """
         binop_type=op.type
         if isinstance(rand2 , ASTNode.ASTNode) and isinstance(rand1 ,ASTNode.ASTNode):
             type1=rand1.type
@@ -242,6 +261,18 @@ class CSEMachine :
         return None
 
     def unaryOp(self, op, rand):
+
+        """
+        Handle unary operations.
+
+        Parameters:
+        - op: Operator
+        - rand: Operand
+
+        Returns:
+        - Result of the operation
+        """
+
         unop_type=op.type
         type1=rand.type
         val1=rand.value
@@ -271,7 +302,6 @@ class CSEMachine :
         print("no matching unary operator found:", unop_type)
         return None
 
-
     def Print(self ,obj):
 
         if isinstance( obj , ASTNode.ASTNode):
@@ -294,15 +324,17 @@ class CSEMachine :
             print(")",end="\n")
 
     def execute(self):
-
-        count = 0;
+        """
+        Execute the CSE machine.
+        """
+        count = 0
         while len(self.control)>0:
 
             controlTop=self.control[-1]
             stackTop=self.stack[-1]
 
             if isinstance(controlTop, LambdaExpression):
-                lambdha=self.control.pop(-1)
+                lambdha = self.control.pop(-1)
                 lambdha.envIdx=self.curEnvIdx
                 self.stack.append(lambdha)
 
@@ -686,6 +718,7 @@ class CSEMachine :
             count+=1
             if (count>500):
                 break
+
 
 class Eta :
     def __init__ (self, envId,id ,tok):
