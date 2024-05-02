@@ -1,4 +1,4 @@
-import ASTNode
+import ASTnode
 
 
 class Tau:

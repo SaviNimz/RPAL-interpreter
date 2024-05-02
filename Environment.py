@@ -1,6 +1,5 @@
 import logging
-
-from ASTNode import ASTNode
+from ASTnode import ASTNode
 
 
 class Environment:
