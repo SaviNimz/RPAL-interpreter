@@ -1,19 +1,14 @@
 class ASTNode:
 
     def standarize(self, root):
-
         if root == None:
             return None
-
-
         root.child = self.standarize(root.child)
-
         if root.sibling != None:
             root.sibling = self.standarize(root.sibling)
-
         nextSibling = root.sibling
-        
         match root.type:
+
             case "let":
                 if root.child.type == "=":
                     #print("equal")
@@ -215,46 +210,4 @@ class ASTNode:
         self.previous = None
         self.indentation = 0
 
-    def print_tree_to_cmd(self):
-
-        for i in range(self.indentation):
-            print(".", end="")
-        if self.value is not None:
-            print("<"+str(self.type.split(".")[1]) +":" + str(self.value)+">")
-        else:print(str(self.type))
-
-        if self.child:
-            self.child.indentation = self.indentation + 1
-            self.child.print_tree_to_cmd()
-        if self.sibling:
-            self.sibling.indentation = self.indentation
-            self.sibling.print_tree_to_cmd()
-
-    def print_tree_to_file(self, file):
-
-        for i in range(self.indentation):
-            file.write(".")
-
-        if self.value is not None:
-
-            file.write("<"+str(self.type.split(".")[1])+":"+str(self.value)+">" + "\n")
-        else :
-            file.write(str(self.type) + "\n")
-
-        if self.child:
-
-            self.child.indentation = self.indentation + 1
-            self.child.print_tree_to_file(file)
-        if self.sibling:
-            self.sibling.indentation = self.indentation
-            self.sibling.print_tree_to_file(file)
-
-    def createCopy (self):
-        node = ASTNode(self.type)
-        node.value = self.value
-        node.sourceLineNumber = self.sourceLineNumber
-        node.child = self.child
-        node.sibling = self.sibling
-        node.previous = self.previous
-        return node
     
