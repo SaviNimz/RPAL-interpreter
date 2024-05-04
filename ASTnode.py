@@ -1,5 +1,14 @@
 class ASTNode:
+    def __init__(self, type):
+        self.type = type
+        self.value = None
+        self.sourceLineNumber = -1
+        self.child = None
+        self.sibling = None
+        self.previous = None
+        self.indentation = 0
 
+    #Function that standardizes the abstract syntax tree to a standardized tree
     def standarize(self, root):
         if root == None:
             return None
@@ -20,7 +29,7 @@ class ASTNode:
                     gammaNode = ASTNode("gamma")
                     gammaNode.child = lambdaNode
                     lambdaNode.sibling = E
-                    #print("stantdarizing let #######")
+
                     X.sibling = P
                     lambdaNode.child = X
                     # P.previous = X
@@ -198,18 +207,7 @@ class ASTNode:
 
             case _:
                 return root
-
-        return root
     
-    def __init__(self, type):
-        self.type = type
-        self.value = None
-        self.sourceLineNumber = -1
-        self.child = None
-        self.sibling = None
-        self.previous = None
-        self.indentation = 0
-
     def createCopy (self):
         node = ASTNode(self.type)
         node.value = self.value
