@@ -4,16 +4,21 @@ import ASTNode
 from Environment import Environment
 from controlStructure import LambdaExpression, Beta, Tau
 
+class Eta :
+    def __init__ (self, envId,id ,tok):
+        self.envId=envId
+        self.id=id
+        self.tok=tok
+
 class CSEMachine :
     results = []
     def __init__(self , ctrlStructures ,file):
 
         """
         Initialize the CSEMachine with control structures and file.
-
         Parameters:
-        - ctrlStructures: List of control structures
-        - file: File to be processed
+         ctrlStructures: List of control structures
+         file: File to be processed
         """
                 
         self.mapEnvironments={}
@@ -38,15 +43,15 @@ class CSEMachine :
 
     def binOp(self ,op, rand1,rand2):
         """
-        Handle binary operations.
+        Handling binary operations(binOp)
 
         Parameters:
-        - op: Operator
-        - rand1: First operand
-        - rand2: Second operand
+         op: Operator
+         rand1: First operand
+         rand2: Second operand
 
         Returns:
-        - Result of the operation
+         Result of the operation
         """
         binop_type=op.type
         if isinstance(rand2 , ASTNode.ASTNode) and isinstance(rand1 ,ASTNode.ASTNode):
@@ -64,23 +69,21 @@ class CSEMachine :
         elif binop_type == "-":
             result=ASTNode.ASTNode( "TokenType.INT")
             result.value=str(int(val1) -int(val2))
-
             return result
 
         elif binop_type == "*":
             result= ASTNode.ASTNode(  "TokenType.INT" )
             result.value=str(int(val1 )* int(val2))
             return result
+        
         elif binop_type == "/":
-
             result=ASTNode.ASTNode("TokenType.INT")
             result.value=str(val1 // val2)
-
             return result
+        
         elif binop_type == "**":
             result = ASTNode.ASTNode("TokenType.INT")
             result.value = str( math.pow(int(val2) ,int(val1)))
-
             return result
 
         elif binop_type == "&":
@@ -94,11 +97,11 @@ class CSEMachine :
             return result
 
         elif binop_type == "or":
-
             result=""
             if val1 == "true" and val2 == "true":
                 result = ASTNode.ASTNode("true")
                 result.value = "true"
+
             elif  val1 == "false" and val2 == "true":
                 result = ASTNode.ASTNode("true")
                 result.value = "true"
@@ -106,17 +109,15 @@ class CSEMachine :
             elif  val1 == "true" and val2 == "false":
                 result = ASTNode.ASTNode("true")
                 result.value = "true"
+
             else:
                 result = ASTNode.ASTNode("false")
                 result.value = "false"
             return result
 
-
         elif binop_type == "aug":
-
             if isinstance(rand1, list):
                 if isinstance(rand2, list):
-
                     t1 = rand1
                     t2 = rand2
                     t2Size = len(t2)
@@ -125,97 +126,77 @@ class CSEMachine :
                     return t1
                 else:
                     if isinstance(rand2, ASTNode.ASTNode):
-
                         t1 = rand1
                         t1.append(rand2)
                         return t1
                     else:
-
                         exit(-1)
             elif rand1.value == "nil":
                 if isinstance(rand2, list):
                     return rand2
                 else:
                     if isinstance(rand2, ASTNode.ASTNode):
-
                         t = []
                         t.append(rand2)
                         return t
                     else:
-
                         exit(-1)
             else:
-
                 exit(-1)
-        elif binop_type == "gr" or  binop_type == ">" :
 
+        elif binop_type == "gr" or  binop_type == ">" :
             if int(val1)>int(val2):
                 result = ASTNode.ASTNode("true")
-
                 result.value = "true"
+
             else :
                 result = ASTNode.ASTNode("false")
-
                 result.value = "false"
             return  result
 
         elif binop_type == "ge" or  binop_type == ">=":
-
             if int(val1) >= int(val2):
                 result = ASTNode.ASTNode("true")
-
                 result.value = "true"
+
             else:
                 result = ASTNode.ASTNode("false")
-
                 result.value = "false"
             return  result
 
         elif binop_type == "ls" or  binop_type == "<":
-
             if int(val1) < int(val2):
                 result = ASTNode.ASTNode("true")
-
                 result.value = "true"
+
             else:
                 result = ASTNode.ASTNode("false")
-
                 result.value = "false"
             return  result
 
         elif binop_type == "le" or  binop_type == "<=":
-
             if int(val1) <= int(val2):
                 result = ASTNode.ASTNode("true")
-
                 result.value = "true"
+
             else:
                 result = ASTNode.ASTNode("false")
-
                 result.value = "false"
             return  result
 
         elif binop_type == "ne":
             result = None
-
             if rand1.type == "TokenType.STRING" and rand2.type == "TokenType.STRING":
-
                 if val1 != val2:
-
                     result = ASTNode.ASTNode("true")
-
                     result.value = "true"
 
                 else:
-
                     result = ASTNode.ASTNode("false")
-
                     result.value = "false"
-
                 return result
 
             else:
-
                 if (int(val1) != int(val2)):
                     result = ASTNode.ASTNode("true")
                     result.value = "true"
@@ -223,13 +204,10 @@ class CSEMachine :
                 else:
                     result = ASTNode.ASTNode("false")
                     result.value = "false"
-
             print(result.type)
-
             return result
 
         elif binop_type == "eq":
-
             result=None
             if rand1.type == "TokenType.STRING" and rand2.type == "TokenType.STRING":
                 if val1 == val2:
@@ -239,16 +217,14 @@ class CSEMachine :
                     result = ASTNode.ASTNode("false")
                     result.value = "false"
                 return result
+            
             else :
-
                 if  (int(val1) == int(val2)):
-
                     result=ASTNode.ASTNode("true")
                     result.value="true"
                 else:
                     result=ASTNode.ASTNode("false")
                     result.value="false"
-
             print(result.type)
             return result
 
@@ -257,16 +233,17 @@ class CSEMachine :
 
         print("Unreachable code !! Something wrong happened!!")
         return None
+    
 
     def unaryOp(self, op, rand):
 
         """
         Handle unary operations.
         Parameters:
-        - op: Operator
-        - rand: Operand
+         op: Operator
+         rand: Operand
         Returns:
-        - Result of the operation
+         Result of the operation
         """
 
         unop_type=op.type
@@ -279,13 +256,13 @@ class CSEMachine :
             if val1 == "true":
                 result=ASTNode.ASTNode("false")
                 result.value="false"
-
                 return result
+            
             else:
                 result = ASTNode.ASTNode("true")
                 result.value = "true"
-
                 return result
+            
         if unop_type == "neg":
             if type1 != "TokenType.INT":
                 print("Wrong type: INT expected for operand: type1:", type1)
@@ -298,30 +275,10 @@ class CSEMachine :
         print("no matching unary operator found:", unop_type)
         return None
 
-    def Print(self ,obj):
-
-        if isinstance( obj , ASTNode.ASTNode):
-            string = obj.value
-            if isinstance(obj.value,str):
-
-                if "\\n" in string:
-                    string=string.replace("\\n","\n")
-                if "\\t" in string:
-                    string=string.replace("\\t","\t")
-            print(string ,end="")
-
-        if isinstance(obj ,list):
-            print("(",end="")
-            for index ,i in enumerate(obj) :
-                self.Print(i)
-                if index < len(obj)-1:
-                    print(",",end=" " )
-
-            print(")",end="\n")
 
     def execute(self):
         """
-        Execute the CSE machine.
+        Executing the CSE machine.
         """
         count = 0
         while len(self.control)>0:
@@ -337,7 +294,6 @@ class CSEMachine :
             elif isinstance(controlTop, ASTNode.ASTNode):
 
                 node=controlTop
-
                 if node.type=="gamma":
                     if isinstance(stackTop, LambdaExpression):
                         self.control.pop()  
@@ -387,13 +343,14 @@ class CSEMachine :
 
                     elif isinstance( stackTop, ASTNode.ASTNode):
 
+                        #Defining RPAL specific functions
                         if stackTop.type == "Y*":
-
                             self.control.pop(-1)
                             self.stack.pop(-1)
                             lambdaY=self.stack[-1]
                             self.stack.pop(-1)
                             self.stack.append(Eta(lambdaY.envIdx,lambdaY.lambdaIdx,lambdaY.item))
+
                         elif stackTop.value == "Print":
                             self.control.pop(-1)
                             self.stack.pop(-1)
@@ -444,11 +401,11 @@ class CSEMachine :
                                 value=''
 
                             else:
-
                                 value=str1.value[1:]
                             result = ASTNode.ASTNode("TokenType.STRING")
                             result.value = value
                             self.stack.append(result)
+
                         elif stackTop.value== "Null":
                             self.control.pop(-1)
                             self.stack.pop(-1)
@@ -504,33 +461,23 @@ class CSEMachine :
                         elif stackTop.value == "Istruthvalue":
 
                             self.control.pop(-1)
-
                             self.stack.pop(-1)
-
                             stackTop = self.stack.pop(-1)
 
                             if isinstance(stackTop, ASTNode.ASTNode):
-
                                 if stackTop.type == "true" or stackTop.type=="false":
-
                                     result = ASTNode.ASTNode("true")
-
                                     result.value = "true"
-
                                     self.stack.append(result)
 
                             else:
                                 result = ASTNode.ASTNode("false")
-
                                 result.value = "false"
-
                                 self.stack.append(result)
 
                         elif stackTop.value== "Isstring" :
                             self.control.pop(-1)
-
                             self.stack.pop(-1)
-
                             stackTop = self.stack.pop(-1)
 
                             if isinstance(stackTop, ASTNode.ASTNode):
@@ -547,9 +494,7 @@ class CSEMachine :
 
                         elif stackTop.value=="Istuple":
                             self.control.pop(-1)
-
                             self.stack.pop(-1)
-
                             stackTop = self.stack.pop(-1)
                             if isinstance(stackTop,list):
                                 result = ASTNode.ASTNode("true")
@@ -564,9 +509,7 @@ class CSEMachine :
 
                         elif stackTop.value=="Isdummy":
                             self.control.pop(-1)
-
                             self.stack.pop(-1)
-
                             stackTop = self.stack.pop(-1)
                             if stackTop.value=="dummy":
                                 result = ASTNode.ASTNode("true")
@@ -690,6 +633,7 @@ class CSEMachine :
                     stackTop = self.stack[-1] if self.stack else None
                     n -= 1
                 self.stack.append(tuple)
+
             elif isinstance(controlTop, Beta):
                 if stackTop.type == "true":
                     self.control.pop(-1)
@@ -703,8 +647,8 @@ class CSEMachine :
                     self.control.pop(-1)  
                     self.control.extend( self.ctrlStructures[controlTop.idx]) 
                     self.stack.pop(-1)
-            elif isinstance(controlTop, Environment):
 
+            elif isinstance(controlTop, Environment):
                 self.control.pop()
                 self.stack.pop()
                 self.stack.pop()
@@ -715,8 +659,3 @@ class CSEMachine :
             if (count>500):
                 break
 
-class Eta :
-    def __init__ (self, envId,id ,tok):
-        self.envId=envId
-        self.id=id
-        self.tok=tok
