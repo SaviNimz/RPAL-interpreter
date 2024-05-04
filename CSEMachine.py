@@ -1,8 +1,6 @@
 import math
 import sys
-
 import ASTNode
-
 from Environment import Environment
 from controlStructure import LambdaExpression, Beta, Tau
 
@@ -264,11 +262,9 @@ class CSEMachine :
 
         """
         Handle unary operations.
-
         Parameters:
         - op: Operator
         - rand: Operand
-
         Returns:
         - Result of the operation
         """
@@ -718,7 +714,6 @@ class CSEMachine :
             count+=1
             if (count>500):
                 break
-
 
 class Eta :
     def __init__ (self, envId,id ,tok):
