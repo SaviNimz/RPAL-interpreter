@@ -378,7 +378,7 @@ class ASTParser:
 
 
 if __name__ == "__main__":
-    input_path = 'tests/fact'
+    input_path = 'tests/and'
     with open(input_path) as file:
         program = file.read()
 
