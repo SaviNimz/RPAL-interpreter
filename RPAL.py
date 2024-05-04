@@ -516,53 +516,42 @@ class ASTParser:
 
         elif self.current_token.value == '(':
             self.read()
-            # print(self.current_token.value)
+
             if self.current_token.type == ')':
-                # print('Vb->( )')
+
                 self.buildTree("()", 0)
                 self.read()
             else:
                 self.procVL()
-                # print('Vb->( Vl )')
+
                 if self.current_token.value != ')':
                     print("Error: ) is expected")
                     return
             self.read()
-
-            # self.buildTree("()", 1)
-
         else:
             print("Error: ID or ( is expected")
             return
 
     def procVL(self):
-        # print("procVL")
-        # print("559 "+str(self.current_token.value))
 
         if self.current_token.type != Tokenizer.TokenType.ID:
             pass
-            # print("562 VL: Identifier expected")  # Replace with appropriate error handling
+
         else:
             pass
-            # print('VL->' + self.current_token.value)
-
             self.read()
             trees_to_pop = 0
             while self.current_token.value == ',':
-                # Vl -> '<IDENTIFIER>' list ',' => ','?;
                 self.read()
                 if self.current_token.type != Tokenizer.TokenType.ID:
-                    print(" 572 VL: Identifier expected")  # Replace with appropriate error handling
+                    print(" 572 VL: Identifier expected") 
                 self.read()
-                # print('VL->id , ?')
 
                 trees_to_pop += 1
-            # print('498')
             if trees_to_pop > 0:
-                self.buildTree(',', trees_to_pop +1)  # +1 for the child identifier
+                self.buildTree(',', trees_to_pop +1)  
 
 if __name__ == "__main__":
-    print('hello world')
     input_path = 'tests/and'
     with open(input_path) as file:
         program = file.read()
