@@ -9,6 +9,7 @@ class Environment:
         self.map_vars = {}
         self.parent = None
 
+# Function that sets the value of a variable in the environment.
     def set_env_params(self, parent_env, key, value):
         self.map_vars[key] = value
         if isinstance(key, ASTNode) and isinstance(value, ASTNode):
@@ -17,10 +18,12 @@ class Environment:
             pass
         self.parent = parent_env
 
+# Function that retrieves the index of the environment.
     def get_env_idx(self):
         return self.idx
+    
+#Function that obtains variable values
     def get_val(self, key):
-
         if key in self.map_vars.keys():
             value = self.map_vars[key]
             self.logger.info("found in cur env id {}".format(self.idx))
