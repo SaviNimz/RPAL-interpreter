@@ -163,11 +163,11 @@ class ControlStructureGenerator:
                 return
 
             case _ :
-                self.current_delta.append(root);
+                self.current_delta.append(root)
                 if (root.child is not None):
-                    self.pre_order_traversal(root.child, delta);
+                    self.pre_order_traversal(root.child, delta)
                     if (root.child.sibling is not None):
-                        self.pre_order_traversal(root.child.sibling, delta);
+                        self.pre_order_traversal(root.child.sibling, delta)
 
                 return
             

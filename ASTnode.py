@@ -12,10 +12,7 @@ class ASTNode:
             root.sibling = self.standarize(root.sibling)
 
         nextSibling = root.sibling
-
-        # prevSibling = root.previous
-        # nextSibling = root.sibling
-
+        
         match root.type:
             case "let":
                 if root.child.type == "=":
