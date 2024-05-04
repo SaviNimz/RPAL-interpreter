@@ -210,4 +210,11 @@ class ASTNode:
         self.previous = None
         self.indentation = 0
 
-    
+    def createCopy (self):
+        node = ASTNode(self.type)
+        node.value = self.value
+        node.sourceLineNumber = self.sourceLineNumber
+        node.child = self.child
+        node.sibling = self.sibling
+        node.previous = self.previous
+        return node

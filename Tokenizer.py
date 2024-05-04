@@ -55,7 +55,6 @@ class LEX_STATE:
         self.current_char = None
         self.column_number = None
 
-
 class Tokenizer:
     def __init__(self, text):
         self.text = text
@@ -247,7 +246,6 @@ class Tokenizer:
             self.error()
 
         return Token(TokenType.EOF, None)
-
 
 class Screener:
     def __init__(self,tokens):

@@ -376,8 +376,9 @@ class ASTParser:
             if trees_to_pop > 0:
                 self.buildTree(',', trees_to_pop +1)  
 
+
 if __name__ == "__main__":
-    input_path = 'tests/abs'
+    input_path = 'tests/fact'
     with open(input_path) as file:
         program = file.read()
 
