@@ -1,8 +1,6 @@
 import math
 import sys
-
 import ASTNode
-
 from Environment import Environment
 from controlStructure import LambdaExpression, Beta, Tau
 

@@ -1,4 +1,0 @@
-let sign N = N ls 0 -> 
-    'Negative' | 
-    'Positive'
-in print(sign (10))

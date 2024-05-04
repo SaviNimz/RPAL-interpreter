@@ -1,6 +1,5 @@
 import ASTNode
 
-
 class Tau:
     def __init__(self, n):
         self.n = n
@@ -17,18 +16,6 @@ class LambdaExpression:
         self.envIdx = envIdx
         self.lambdaIdx = lambdaIdx
         self.item = tok
-
-    def print_lambda_expression(self):
-        if isinstance(self.item, ASTNode.ASTNode):
-            pass
-
-        elif isinstance(self.item, list):
-
-            lam_vars = ""
-            for it in self.item:
-
-                lam_vars += it.name + ','
-
 
 class ControlStructureGenerator:
     def __init__(self):

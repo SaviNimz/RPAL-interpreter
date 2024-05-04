@@ -37,7 +37,6 @@ class ASTNode:
         if self.sibling:
             self.sibling.indentation = self.indentation
             self.sibling.print_tree_to_file(file)
-
 #Defining a class for Tree Node
 class TreeNode:
     def __init__(self, data):
