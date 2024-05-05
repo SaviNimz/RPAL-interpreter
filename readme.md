@@ -21,9 +21,9 @@ A lexical analyzer and parser for RPAL was developed. The output of our parser w
 ## Installation
 
 1. Clone the repository:
-    
+    ```
     https://github.com/SaviNimz/RPAL-interpreter.git
-    
+    ```
 2. Install Python (if not already installed).
 3. Navigate to the project directory:
 
@@ -53,14 +53,14 @@ A lexical analyzer and parser for RPAL was developed. The output of our parser w
 
 1. Ensure you have a text file containing the code you want to interpret (e.g: test_1.txt).
 2. Run the interpreter by executing the following command:
-    bash
+    ```
     python myrpal.py file_name
     
 
     Replace file_name with the name of the file containing the RPAL program.
 
 3. Optionally, to print only the abstract syntax tree (AST), include the -ast switch:
-    bash
+    ```
     python myrpal.py file_name -ast
     
 
@@ -71,12 +71,12 @@ A lexical analyzer and parser for RPAL was developed. The output of our parser w
 
 Suppose you have the following code in test_1.rpal:
 
-python
-let x = 10 in
-    fn(x) . x + 20
+```
+let Sum(A) = Psum (A,Order A )
+where rec Psum (T,N) = N eq 0 -> 0
+ | Psum(T,N-1)+T N
+in Print ( Sum (1,2,3,4,5) )
 
+Running the interpreter on this code without -ast switch will produce:
 
-Running the interpreter on this code will produce:
-
-
-[Output code]
+15
