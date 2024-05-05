@@ -23,7 +23,6 @@ A lexical analyzer and parser for RPAL was developed. The output of our parser w
 1. Clone the repository:
     ```
     https://github.com/SaviNimz/RPAL-interpreter.git
-    ```
 2. Install Python (if not already installed).
 3. Navigate to the project directory:
 
@@ -77,6 +76,7 @@ where rec Psum (T,N) = N eq 0 -> 0
  | Psum(T,N-1)+T N
 in Print ( Sum (1,2,3,4,5) )
 
-Running the interpreter on this code without -ast switch will produce:
 
+Running the interpreter on this code without -ast switch will produce:
+```
 15
