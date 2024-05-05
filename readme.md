@@ -27,6 +27,7 @@ A lexical analyzer and parser for RPAL was developed. The output of our parser w
 2. Install Python (if not already installed).
 3. Navigate to the project directory:
 
+
 ### File Structure
 - **ASTNode.py**: 
     - This section contains the creation, manipulation, and standardization of nodes of the abstract syntax tree.
@@ -50,22 +51,33 @@ A lexical analyzer and parser for RPAL was developed. The output of our parser w
 
 ## Usage
 
-1. Ensure you have a text file containing the code you want to interpret (e.g., `test_1.txt`).
+1. Ensure you have a text file containing the code you want to interpret (e.g: `test_1.txt`).
 2. Run the interpreter by executing the following command:
+    ```bash
+    python myrpal.py file_name
     ```
-    python parser.py
+
+    Replace `file_name` with the name of the file containing the RPAL program.
+
+3. Optionally, to print only the abstract syntax tree (AST), include the `-ast` switch:
+    ```bash
+    python myrpal.py file_name -ast
     ```
-3. The interpreter will tokenize the input code, parse it, generate the abstract syntax tree (AST), and print the AST structure.
+
+    This command will parse the RPAL program in `file_name` and print only the AST structure without executing further.
+
 
 ## Example
 
-Suppose you have the following code in `test_1.txt`:
+Suppose you have the following code in `test_1.rpal`:
 
 ```python
 let x = 10 in
     fn(x) . x + 20
+```
 
 Running the interpreter on this code will produce:
 
-[example]
-
+```
+[Output code]
+```
