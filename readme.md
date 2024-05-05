@@ -19,6 +19,9 @@ This repository contains an interpreter for RPAL programming language implemente
 2. Install Python (if not already installed).
 3. Navigate to the project directory:
 
+## Code Insights
+![interpreter](https://github.com/SaviNimz/RPAL-interpreter/assets/108650897/0b223583-dfc0-45c1-bdf4-39a4292142ed)
+
 ## Usage
 
 1. Ensure you have a text file containing the code you want to interpret (e.g., `test_1.txt`).
@@ -46,4 +49,5 @@ fn
 + 
 . id:x
 . 20
+
 
