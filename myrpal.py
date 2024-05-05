@@ -376,9 +376,25 @@ class ASTParser:
             if trees_to_pop > 0:
                 self.buildTree(',', trees_to_pop +1)  
 
-
 if __name__ == "__main__":
-    input_path = 'tests/and'
+    import sys
+
+    if len(sys.argv) > 1:
+        argv_idx = 1  # Index of file name in argv
+        ast_flag = 0  # Flag to check if AST or ST is to be printed
+
+        if len(sys.argv) == 3:  # Check if AST or ST flag is present
+            argv_idx = 2
+            if sys.argv[2] == "-ast":  # Check if AST flag is present
+                # print("AST flag is set")
+                ast_flag = 1
+                print(ast_flag)
+            input_path = sys.argv[1]
+            
+        else:
+
+            input_path = sys.argv[1]
+
     with open(input_path) as file:
         program = file.read()
 
