@@ -209,7 +209,18 @@ class ASTNode:
         self.sibling = None
         self.previous = None
         self.indentation = 0
-
+    def print_tree_to_cmd(self):
+            for i in range(self.indentation):
+                print(".", end="")
+            if self.value is not None:
+                print("<"+str(self.type.split(".")[1]) +":" + str(self.value)+">")
+            else:print(str(self.type))
+            if self.child:
+                self.child.indentation = self.indentation + 1
+                self.child.print_tree_to_cmd()
+            if self.sibling:
+                self.sibling.indentation = self.indentation
+                self.sibling.print_tree_to_cmd()
     def createCopy (self):
         node = ASTNode(self.type)
         node.value = self.value
