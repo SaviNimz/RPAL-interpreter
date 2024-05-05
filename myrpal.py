@@ -136,7 +136,6 @@ class ASTParser:
         while self.current_token.value == '&':
             self.read()
             self.procBs()
-            # print('Bt->Bs & Bs')
             self.buildTree("&", 2)
 
     def procBs(self):
@@ -378,7 +377,21 @@ class ASTParser:
 
 
 if __name__ == "__main__":
-    input_path = 'tests/fact'
+    import sys
+
+    if len(sys.argv) > 1:
+        argv_idx = 1  
+        ast_flag = 0  
+
+        if len(sys.argv) == 3:  # Check if AST or ST flag is present
+            argv_idx = 2
+            if sys.argv[2] == "-ast":  # Check if AST flag is present
+                ast_flag = 1
+                print(ast_flag)
+            input_path = sys.argv[1]
+        else:
+            input_path = sys.argv[1]
+
     with open(input_path) as file:
         program = file.read()
 
@@ -400,9 +413,10 @@ if __name__ == "__main__":
     parser.index = 0
 
     parser.procE()
-
     root = stack[0]
+    if ast_flag == 1:
 
+        root.print_tree_to_cmd()
     ASTStandarizer = ASTNode("ASTStandarizer")
     root = ASTStandarizer.standarize(root)
 
@@ -410,4 +424,6 @@ if __name__ == "__main__":
     ctr_structures = ctrlStructGen.generate_control_structures(root)
 
     cseMachine = CSEMachine(ctr_structures, input_path)
-    result = cseMachine.execute()
+    if ast_flag == 0:
+
+        result = cseMachine.execute()

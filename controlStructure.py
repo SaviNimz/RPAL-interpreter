@@ -86,19 +86,11 @@ class ControlStructureGenerator:
                 node3 = root.child.sibling.sibling
 
                 node2.sibling = None 
-                """
-                preOrderTraversal(node2, delta2)
-                ctrlDelta2 = CtrlStruct(savedcurIdxDelta2, delta2)
-                mapCtrlStructs[savedcurIdxDelta2] = ctrlDelta2
-                """
+
                 self.queue.append((savedcurIdxDelta2, node2, delta2))
 
                 delta3 = []
-                """
-                preOrderTraversal(node3, delta3)
-                ctrlDelta3 = CtrlStruct(savedcurIdxDelta3, delta3)
-                mapCtrlStructs[savedcurIdxDelta3] = ctrlDelta3
-                """
+
                 self.queue.append((savedcurIdxDelta3, node3, delta3))
                 self.current_delta.append( CtrlStruct ( savedcurIdxDelta2 , delta2))
                 self.current_delta.append(CtrlStruct ( savedcurIdxDelta3 , delta3))

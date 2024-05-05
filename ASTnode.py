@@ -11,7 +11,7 @@ class ASTNode:
 
             case "let":
                 if root.child.type == "=":
-                    #print("equal")
+
                     equal = root.child
                     P = equal.sibling
                     X = equal.child
@@ -20,10 +20,8 @@ class ASTNode:
                     gammaNode = ASTNode("gamma")
                     gammaNode.child = lambdaNode
                     lambdaNode.sibling = E
-                    #print("stantdarizing let #######")
                     X.sibling = P
                     lambdaNode.child = X
-                    # P.previous = X
                     gammaNode.sibling = nextSibling
 
                     return gammaNode
@@ -197,10 +195,7 @@ class ASTNode:
                 return new_root
 
             case _:
-                return root
-
-        return root
-    
+                return root   
     def __init__(self, type):
         self.type = type
         self.value = None
@@ -209,7 +204,18 @@ class ASTNode:
         self.sibling = None
         self.previous = None
         self.indentation = 0
-
+    def print_tree_to_cmd(self):
+            for i in range(self.indentation):
+                print(".", end="")
+            if self.value is not None:
+                print("<"+str(self.type.split(".")[1]) +":" + str(self.value)+">")
+            else:print(str(self.type))
+            if self.child:
+                self.child.indentation = self.indentation + 1
+                self.child.print_tree_to_cmd()
+            if self.sibling:
+                self.sibling.indentation = self.indentation
+                self.sibling.print_tree_to_cmd()
     def createCopy (self):
         node = ASTNode(self.type)
         node.value = self.value
