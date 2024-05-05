@@ -11,7 +11,7 @@ class ASTNode:
 
             case "let":
                 if root.child.type == "=":
-                    #print("equal")
+
                     equal = root.child
                     P = equal.sibling
                     X = equal.child
@@ -20,10 +20,8 @@ class ASTNode:
                     gammaNode = ASTNode("gamma")
                     gammaNode.child = lambdaNode
                     lambdaNode.sibling = E
-                    #print("stantdarizing let #######")
                     X.sibling = P
                     lambdaNode.child = X
-                    # P.previous = X
                     gammaNode.sibling = nextSibling
 
                     return gammaNode
@@ -198,9 +196,7 @@ class ASTNode:
 
             case _:
                 return root
-
-        return root
-    
+            
     def __init__(self, type):
         self.type = type
         self.value = None

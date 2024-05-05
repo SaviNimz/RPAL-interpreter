@@ -431,10 +431,10 @@ class CSEMachine :
                             result = ASTNode.ASTNode("TokenType.STRING")
                             result.value = value
                             self.stack.append(result)
-                            # self.stack.append(value)
+
 
                         elif stackTop.value=="Stern":
-                            #print("Stern")
+        
                             self.control.pop(-1)
                             self.stack.pop(-1)
                             str1=self.stack.pop(-1)

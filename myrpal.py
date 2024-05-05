@@ -136,7 +136,6 @@ class ASTParser:
         while self.current_token.value == '&':
             self.read()
             self.procBs()
-            # print('Bt->Bs & Bs')
             self.buildTree("&", 2)
 
     def procBs(self):
@@ -380,19 +379,16 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) > 1:
-        argv_idx = 1  # Index of file name in argv
-        ast_flag = 0  # Flag to check if AST or ST is to be printed
+        argv_idx = 1  
+        ast_flag = 0  
 
         if len(sys.argv) == 3:  # Check if AST or ST flag is present
             argv_idx = 2
             if sys.argv[2] == "-ast":  # Check if AST flag is present
-                # print("AST flag is set")
                 ast_flag = 1
                 print(ast_flag)
             input_path = sys.argv[1]
-            
         else:
-
             input_path = sys.argv[1]
 
     with open(input_path) as file:
@@ -424,6 +420,9 @@ if __name__ == "__main__":
 
     ctrlStructGen = controlStructure.ControlStructureGenerator()
     ctr_structures = ctrlStructGen.generate_control_structures(root)
+    if ast_flag == 1:
+        root.print_tree_to_cmd()
+    else:
 
-    cseMachine = CSEMachine(ctr_structures, input_path)
-    result = cseMachine.execute()
+        cseMachine = CSEMachine(ctr_structures, input_path)
+        result = cseMachine.execute()
