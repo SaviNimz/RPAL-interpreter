@@ -54,14 +54,14 @@ A lexical analyzer and parser for RPAL was developed. The output of our parser w
 2. Run the interpreter by executing the following command:
     ```
     python myrpal.py file_name
-    
+    ```
 
     Replace file_name with the name of the file containing the RPAL program.
 
 3. Optionally, to print only the abstract syntax tree (AST), include the -ast switch:
     ```
     python myrpal.py file_name -ast
-    
+    ```
 
     This command will parse the RPAL program in file_name and print only the AST structure without executing further.
 
@@ -75,8 +75,57 @@ let Sum(A) = Psum (A,Order A )
 where rec Psum (T,N) = N eq 0 -> 0
  | Psum(T,N-1)+T N
 in Print ( Sum (1,2,3,4,5) )
-
+```
 
 Running the interpreter on this code without -ast switch will produce:
 ```
 15
+```
+Running the interpreter on this code with -ast switch will produce:
+
+```
+let
+.function_form
+..<ID:Sum>
+..<ID:A>
+..where
+...gamma
+....<ID:Psum>
+....tau
+.....<ID:A>
+.....gamma
+......<ID:Order>
+......<ID:A>
+...rec
+....function_form
+.....<ID:Psum>
+.....,
+......<ID:T>
+......<ID:N>
+.....->
+......eq
+.......<ID:N>
+.......<INT:0>
+......<INT:0>
+......+
+.......gamma
+........<ID:Psum>
+........tau
+.........<ID:T>
+.........-
+..........<ID:N>
+..........<INT:1>
+.......gamma
+........<ID:T>
+........<ID:N>
+.gamma
+..<ID:Print>
+..gamma
+...<ID:Sum>
+...tau
+....<INT:1>
+....<INT:2>
+....<INT:3>
+....<INT:4>
+....<INT:5>
+```

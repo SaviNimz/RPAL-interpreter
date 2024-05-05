@@ -415,8 +415,8 @@ if __name__ == "__main__":
     parser.procE()
     root = stack[0]
     if ast_flag == 1:
-
         root.print_tree_to_cmd()
+        
     ASTStandarizer = ASTNode("ASTStandarizer")
     root = ASTStandarizer.standarize(root)
 
