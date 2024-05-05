@@ -1,8 +1,9 @@
-import ASTNode
 
 class Tau:
     def __init__(self, n):
         self.n = n
+
+#Beta symbol signals the presence of conditionals
 class Beta:
     def __init__(self):
         pass
@@ -29,39 +30,24 @@ class ControlStructureGenerator:
         delta = []
         self.current_delta = []
         self.pre_order_traversal(root, delta)
-
-        ctrl_delta = CtrlStruct(self.curIdxDelta, delta)
         self.map_ctrl_structs[0] = self.current_delta.copy()
-
-
         while len(self.queue)>0:
 
             self.current_delta = []
-
-
             idx, node, delta_queue = self.queue[0]
-
             self.pre_order_traversal(node, delta_queue)
-
-            ctrl_delta = CtrlStruct(idx, delta_queue)
             self.map_ctrl_structs[idx] = self.current_delta.copy()
-
             self.queue.pop(0)
 
         return self.map_ctrl_structs
-
-
-
+  #defining the pre-order traversals through the standardized tree
     def pre_order_traversal(self, root ,delta):
 
         match root.type :
             case "lambda":
-
                 self.curIdxDelta += 1
-
                 lambda_exp = None
                 if root.child.type ==',':
-
                     tau_list = []
                     child = root.child.child
                     while child is not None:
@@ -72,9 +58,9 @@ class ControlStructureGenerator:
                     lambda_exp = LambdaExpression(0, self.curIdxDelta, root.child)
                 self.current_delta.append(lambda_exp)
                 delta_lambda = []
-
                 self.queue.append((self.curIdxDelta, root.child.sibling, delta_lambda))
                 return
+            #Pre-order traversal under conditional
             case "->":
                 delta2 = []
                 savedcurIdxDelta2 = self.curIdxDelta + 1
@@ -82,19 +68,13 @@ class ControlStructureGenerator:
                 self.curIdxDelta += 2
 
                 node2 = root.child.sibling
-
                 node3 = root.child.sibling.sibling
-
                 node2.sibling = None 
-
                 self.queue.append((savedcurIdxDelta2, node2, delta2))
-
                 delta3 = []
-
                 self.queue.append((savedcurIdxDelta3, node3, delta3))
                 self.current_delta.append( CtrlStruct ( savedcurIdxDelta2 , delta2))
                 self.current_delta.append(CtrlStruct ( savedcurIdxDelta3 , delta3))
-
                 beta = Beta()
                 self.current_delta.append(beta) 
 
@@ -103,6 +83,7 @@ class ControlStructureGenerator:
                 self.pre_order_traversal(root.child, delta)
 
                 return
+            #Pre-order traversal under gamma
             case "gamma":
 
                 self.current_delta.append(root)
@@ -110,7 +91,7 @@ class ControlStructureGenerator:
                 if root.child.sibling is not None:
                     self.pre_order_traversal(root.child.sibling, delta)
                 return
-
+            #Pre-order traversal under tau
             case "tau":
                 initial_length=len(self.current_delta)
                 node = root.child

@@ -1,5 +1,5 @@
 class ASTNode:
-
+    #Function that standardizes the abstract syntax tree to a standardized tree
     def standarize(self, root):
         if root == None:
             return None
@@ -23,11 +23,9 @@ class ASTNode:
                     X.sibling = P
                     lambdaNode.child = X
                     gammaNode.sibling = nextSibling
-
                     return gammaNode
                 else:
                     root.sibling = nextSibling
-
                     return root
                 
             case "where":
@@ -44,12 +42,8 @@ class ASTNode:
                     lambdaNode.child = X
 
                     X.sibling = P
-                    # P.previous = gammaNode
                     P.sibling = None
-
                     gammaNode.sibling = nextSibling
-
-
                     return gammaNode
                 else:
                     root.sibling = nextSibling
@@ -171,8 +165,6 @@ class ASTNode:
                 copy_X.sibling = E
                 E.previous = copy_X
                 new_root.sibling = nextSibling
-
-
                 return new_root
 
             case "@":
@@ -185,10 +177,8 @@ class ASTNode:
 
                 new_root.child = gamma_l
                 gamma_l.sibling = E2
-                # E2.previous = gamma_l
                 gamma_l.child = N
                 N.sibling = E1
-                # E1.previous = N
                 E1.sibling = None
                 new_root.sibling=nextSibling
 
