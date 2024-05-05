@@ -375,6 +375,7 @@ class ASTParser:
             if trees_to_pop > 0:
                 self.buildTree(',', trees_to_pop +1)  
 
+
 if __name__ == "__main__":
     import sys
 
@@ -412,17 +413,17 @@ if __name__ == "__main__":
     parser.index = 0
 
     parser.procE()
-
     root = stack[0]
+    if ast_flag == 1:
 
+        root.print_tree_to_cmd()
     ASTStandarizer = ASTNode("ASTStandarizer")
     root = ASTStandarizer.standarize(root)
 
     ctrlStructGen = controlStructure.ControlStructureGenerator()
     ctr_structures = ctrlStructGen.generate_control_structures(root)
-    if ast_flag == 1:
-        root.print_tree_to_cmd()
-    else:
 
-        cseMachine = CSEMachine(ctr_structures, input_path)
+    cseMachine = CSEMachine(ctr_structures, input_path)
+    if ast_flag == 0:
+
         result = cseMachine.execute()

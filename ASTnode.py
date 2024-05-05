@@ -195,8 +195,7 @@ class ASTNode:
                 return new_root
 
             case _:
-                return root
-            
+                return root   
     def __init__(self, type):
         self.type = type
         self.value = None
